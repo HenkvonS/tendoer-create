@@ -101,6 +101,7 @@ export default function Login() {
             }}
             theme="default"
             providers={[]}
+            redirectTo={window.location.origin}
           />
           <div className="flex justify-center">
             <Button
