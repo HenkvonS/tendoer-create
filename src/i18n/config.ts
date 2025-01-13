@@ -46,6 +46,50 @@ const resources = {
       },
     },
   },
+  de: {
+    translation: {
+      dashboard: {
+        title: "Ausschreibungsmanagement-Dashboard",
+        subtitle: "Verwalten und verfolgen Sie alle Ihre Ausschreibungsprozesse effizient",
+      },
+      stats: {
+        totalTenders: "Gesamtausschreibungen",
+        activeTenders: "Aktive Ausschreibungen",
+        participatingVendors: "Teilnehmende Anbieter",
+        pendingReviews: "Ausstehende Überprüfungen",
+      },
+      actions: {
+        search: "Ausschreibungen suchen...",
+        createTender: "Ausschreibung erstellen",
+      },
+      tender: {
+        deadline: "Frist",
+        budget: "Budget",
+      },
+    },
+  },
+  sv: {
+    translation: {
+      dashboard: {
+        title: "Anbudshanteringspanel",
+        subtitle: "Hantera och spåra alla dina anbudsprocesser effektivt",
+      },
+      stats: {
+        totalTenders: "Totala anbud",
+        activeTenders: "Aktiva anbud",
+        participatingVendors: "Deltagande leverantörer",
+        pendingReviews: "Väntande granskningar",
+      },
+      actions: {
+        search: "Sök anbud...",
+        createTender: "Skapa anbud",
+      },
+      tender: {
+        deadline: "Tidsfrist",
+        budget: "Budget",
+      },
+    },
+  },
 };
 
 i18n

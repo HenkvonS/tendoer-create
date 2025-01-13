@@ -29,6 +29,12 @@ const LanguageSelector = () => {
         <DropdownMenuItem onClick={() => changeLanguage('es')}>
           Español
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => changeLanguage('de')}>
+          Deutsch
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => changeLanguage('sv')}>
+          Svenska
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
