@@ -76,7 +76,7 @@ const Index = () => {
             className="pl-9 bg-white/50 backdrop-blur-sm border-gray-200"
           />
         </div>
-        <Button variant="outline" className="bg-white hover:bg-gray-50">
+        <Button variant="secondary" className="bg-gray-800 text-white hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600">
           {t('actions.createTender')}
         </Button>
       </div>
