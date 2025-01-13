@@ -24,6 +24,9 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useNavigate } from "react-router-dom"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
 const quickActions = [
   {
@@ -65,6 +68,30 @@ const other = [
 ]
 
 export function AppSidebar() {
+  const navigate = useNavigate()
+  const { toast } = useToast()
+
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      })
+      
+      navigate("/login")
+    } catch (error) {
+      console.error("Error logging out:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+      })
+    }
+  }
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -154,7 +181,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                <SidebarMenuButton>
+                <SidebarMenuButton onClick={handleLogout}>
                   <LogOut className="h-4 w-4" />
                   <span>Logout</span>
                 </SidebarMenuButton>
