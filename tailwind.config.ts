@@ -63,7 +63,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["Source Sans Pro", "sans-serif"],
+        sans: ["Public Sans", "sans-serif"],
       },
     },
   },
