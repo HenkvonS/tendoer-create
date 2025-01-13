@@ -37,7 +37,7 @@ const Index = () => {
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto">
       <div className="space-y-1">
-        <h1 className="text-2xl font-medium tracking-tight bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
           {t('dashboard.title')}
         </h1>
         <p className="text-sm text-gray-500">
@@ -70,15 +70,15 @@ const Index = () => {
 
       <div className="flex items-center space-x-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
           <Input
             placeholder={t('actions.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white/50 backdrop-blur-sm border-0 shadow-sm"
+            className="pl-9 bg-white border border-gray-200 hover:border-gray-300 focus:border-gray-300 focus:ring-0"
           />
         </div>
-        <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 border-0 shadow-sm">
+        <Button className="bg-gray-900 hover:bg-gray-800 text-white border-0">
           {t('actions.createTender')}
         </Button>
       </div>

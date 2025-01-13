@@ -12,31 +12,31 @@ interface TenderCardProps {
 
 const TenderCard = ({ title, organization, deadline, status, budget }: TenderCardProps) => {
   const statusColors = {
-    draft: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-    active: "bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
-    closed: "bg-red-100 text-red-700 hover:bg-red-200",
+    draft: "bg-gray-100 text-gray-600 hover:bg-gray-200",
+    active: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100",
+    closed: "bg-red-50 text-red-600 hover:bg-red-100",
   };
 
   return (
-    <Card className="hover:shadow-md transition-all duration-200 border-0 shadow-sm bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm">
+    <Card className="group hover:bg-gray-50/50 transition-all duration-200 border border-gray-100">
       <CardHeader className="p-4">
         <div className="flex justify-between items-start gap-4">
-          <CardTitle className="text-base font-medium leading-none">{title}</CardTitle>
+          <CardTitle className="text-base font-medium leading-none text-gray-900">{title}</CardTitle>
           <Badge className={`${statusColors[status]} font-normal`}>{status}</Badge>
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="space-y-2.5">
           <div className="flex items-center text-sm text-gray-600">
-            <Building2 className="h-3.5 w-3.5 mr-2 text-primary" />
+            <Building2 className="h-3.5 w-3.5 mr-2 text-gray-400" />
             <span>{organization}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
-            <CalendarDays className="h-3.5 w-3.5 mr-2 text-primary" />
+            <CalendarDays className="h-3.5 w-3.5 mr-2 text-gray-400" />
             <span>Deadline: {deadline}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
-            <FileText className="h-3.5 w-3.5 mr-2 text-primary" />
+            <FileText className="h-3.5 w-3.5 mr-2 text-gray-400" />
             <span>Budget: {budget}</span>
           </div>
         </div>
