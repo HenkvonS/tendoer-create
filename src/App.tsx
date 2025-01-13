@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar"
+import LanguageSelector from "@/components/LanguageSelector"
 import Index from "./pages/Index"
 import "./i18n/config"
 
@@ -23,6 +24,7 @@ const App = () => (
               <div className="container p-6">
                 <div className="flex justify-between items-center mb-4">
                   <SidebarTrigger />
+                  <LanguageSelector />
                 </div>
                 <Routes>
                   <Route path="/" element={<Index />} />

@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import TenderCard from "@/components/TenderCard";
 import StatsCard from "@/components/StatsCard";
-import LanguageSelector from "@/components/LanguageSelector";
 import { Search, FileText, Users, TrendingUp, AlertCircle } from "lucide-react";
 
 const Index = () => {
@@ -37,14 +36,11 @@ const Index = () => {
 
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto">
-      <div className="flex justify-between items-start">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-medium tracking-tight">{t('dashboard.title')}</h1>
-          <p className="text-sm text-gray-500">
-            {t('dashboard.subtitle')}
-          </p>
-        </div>
-        <LanguageSelector />
+      <div className="space-y-1">
+        <h1 className="text-2xl font-medium tracking-tight">{t('dashboard.title')}</h1>
+        <p className="text-sm text-gray-500">
+          {t('dashboard.subtitle')}
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
