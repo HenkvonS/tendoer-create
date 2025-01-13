@@ -5,6 +5,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { supabase } from "@/integrations/supabase/client"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { AuthError, AuthApiError } from "@supabase/supabase-js"
 
@@ -27,6 +28,10 @@ const getErrorMessage = (error: AuthError) => {
 export default function Login() {
   const navigate = useNavigate()
   const { toast } = useToast()
+
+  const handleSkip = () => {
+    navigate("/")
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -71,10 +76,10 @@ export default function Login() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-medium">Welcome</CardTitle>
           <CardDescription>
-            Sign in to your account or create a new one
+            Sign in to your account or continue as guest
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -97,6 +102,15 @@ export default function Login() {
             theme="default"
             providers={[]}
           />
+          <div className="flex justify-center">
+            <Button
+              variant="outline"
+              onClick={handleSkip}
+              className="mt-2"
+            >
+              Continue as Guest
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
