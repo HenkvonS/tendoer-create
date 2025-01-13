@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import TenderCard from "@/components/TenderCard";
@@ -78,9 +79,11 @@ const Index = () => {
             className="pl-9 bg-white border border-gray-200 hover:border-gray-300 focus:border-gray-300 focus:ring-0"
           />
         </div>
-        <Button className="bg-gray-900 hover:bg-gray-800 text-white border-0">
-          {t('actions.createTender')}
-        </Button>
+        <Link to="/tenders/create">
+          <Button className="bg-gray-900 hover:bg-gray-800 text-white border-0">
+            {t('actions.createTender')}
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
