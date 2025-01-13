@@ -13,9 +13,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { ArrowLeft, DollarSign, Calendar } from "lucide-react"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -81,72 +84,126 @@ const CreateTender = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">{t("Create New Tender")}</h1>
-      
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("Title")}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="container max-w-3xl py-8">
+      <Button
+        variant="ghost"
+        className="mb-6"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("Description")}</FormLabel>
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">{t("Create New Tender")}</CardTitle>
+          <CardDescription>
+            Create a new tender for your organization. Fill in the details below.
+          </CardDescription>
+        </CardHeader>
 
-          <FormField
-            control={form.control}
-            name="budget"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("Budget")}</FormLabel>
-                <FormControl>
-                  <Input type="number" step="0.01" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Title")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter tender title" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Give your tender a clear and descriptive title
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            control={form.control}
-            name="deadline"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("Deadline")}</FormLabel>
-                <FormControl>
-                  <Input type="datetime-local" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("Description")}</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe the tender requirements and specifications"
+                        className="min-h-[120px]"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Provide detailed information about the tender
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Button type="submit" className="w-full">
-            {t("Create Tender")}
-          </Button>
-        </form>
-      </Form>
+              <div className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="budget"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("Budget")}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="number" 
+                            step="0.01" 
+                            placeholder="Enter budget amount"
+                            className="pl-10"
+                            {...field} 
+                          />
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Optional: Specify the tender budget
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="deadline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("Deadline")}</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                          <Input 
+                            type="datetime-local"
+                            className="pl-10"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Optional: Set a submission deadline
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <CardFooter className="px-0 pb-0">
+                <Button type="submit" className="w-full">
+                  {t("Create Tender")}
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
