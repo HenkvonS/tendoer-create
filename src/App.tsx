@@ -24,31 +24,28 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route
-              path="/"
-              element={
-                <SidebarProvider>
-                  <div className="flex min-h-screen w-full">
-                    <AppSidebar />
-                    <main className="flex-1">
-                      <div className="container p-6">
-                        <div className="flex justify-between items-center mb-4">
-                          <SidebarTrigger />
-                          <div className="flex items-center gap-4">
-                            <ThemeToggle />
-                            <LanguageSelector />
-                          </div>
+            <Route path="/*" element={
+              <SidebarProvider>
+                <div className="flex min-h-screen w-full">
+                  <AppSidebar />
+                  <main className="flex-1">
+                    <div className="container p-6">
+                      <div className="flex justify-between items-center mb-4">
+                        <SidebarTrigger />
+                        <div className="flex items-center gap-4">
+                          <ThemeToggle />
+                          <LanguageSelector />
                         </div>
-                        <Routes>
-                          <Route path="/" element={<Index />} />
-                          <Route path="/tenders/create" element={<CreateTender />} />
-                        </Routes>
                       </div>
-                    </main>
-                  </div>
-                </SidebarProvider>
-              }
-            />
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/tenders/create" element={<CreateTender />} />
+                      </Routes>
+                    </div>
+                  </main>
+                </div>
+              </SidebarProvider>
+            } />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
