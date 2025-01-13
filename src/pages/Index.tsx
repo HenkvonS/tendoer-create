@@ -97,9 +97,9 @@ const Index = () => {
           <div className="h-[300px]">
             <ChartContainer
               config={{
-                active: { theme: { light: "#1E40AF", dark: "#60A5FA" } },
-                completed: { theme: { light: "#059669", dark: "#34D399" } },
-                draft: { theme: { light: "#64748b", dark: "#94A3B8" } },
+                active: { theme: { light: "#1E40AF" } },
+                completed: { theme: { light: "#059669" } },
+                draft: { theme: { light: "#64748b" } },
               }}
             >
               <BarChart data={monthlyTenders}>
@@ -120,7 +120,7 @@ const Index = () => {
           <div className="h-[300px]">
             <ChartContainer
               config={{
-                amount: { theme: { light: "#1E40AF", dark: "#60A5FA" } },
+                amount: { theme: { light: "#1E40AF" } },
               }}
             >
               <LineChart data={budgetData}>
