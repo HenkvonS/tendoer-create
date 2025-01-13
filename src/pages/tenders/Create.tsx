@@ -18,7 +18,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { ArrowLeft, DollarSign, Calendar } from "lucide-react"
+import { ArrowLeft, DollarSign, Calendar, Wand2 } from "lucide-react"
+import { useTenderAI } from "@/hooks/use-tender-ai"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -31,6 +32,7 @@ const CreateTender = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { generateDescription, isGenerating } = useTenderAI()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,6 +43,27 @@ const CreateTender = () => {
       deadline: "",
     },
   })
+
+  const handleGenerateDescription = async () => {
+    const title = form.getValues("title")
+    if (!title) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter a title first",
+      })
+      return
+    }
+
+    const description = await generateDescription(title)
+    if (description) {
+      form.setValue("description", description)
+      toast({
+        title: "Success",
+        description: "AI description generated successfully",
+      })
+    }
+  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -98,7 +121,7 @@ const CreateTender = () => {
         <CardHeader>
           <CardTitle className="text-2xl">{t("Create New Tender")}</CardTitle>
           <CardDescription>
-            Create a new tender for your organization. Fill in the details below.
+            Create a new tender for your organization. Fill in the details below or use AI to help generate content.
           </CardDescription>
         </CardHeader>
 
@@ -127,7 +150,19 @@ const CreateTender = () => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("Description")}</FormLabel>
+                    <FormLabel className="flex items-center justify-between">
+                      {t("Description")}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleGenerateDescription}
+                        disabled={isGenerating}
+                      >
+                        <Wand2 className="mr-2 h-4 w-4" />
+                        {isGenerating ? "Generating..." : "Generate with AI"}
+                      </Button>
+                    </FormLabel>
                     <FormControl>
                       <Textarea 
                         placeholder="Describe the tender requirements and specifications"
@@ -136,7 +171,7 @@ const CreateTender = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      Provide detailed information about the tender
+                      Provide detailed information about the tender or use AI to generate a description
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
