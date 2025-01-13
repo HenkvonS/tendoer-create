@@ -1,49 +1,23 @@
-import { 
-  Home, 
-  FileText, 
-  Users, 
-  Settings, 
-  LogOut, 
-  FolderOpen,
-  List,
-  LayoutGrid,
-  Menu,
-  Settings2
-} from "lucide-react"
+import { Home, FileText, Users, Settings, LogOut } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar"
 
-const quickActions = [
+const items = [
   {
-    title: "All Tenders",
+    title: "Dashboard",
     url: "/",
-    icon: LayoutGrid,
+    icon: Home,
   },
   {
-    title: "Recent",
-    url: "/recent",
-    icon: List,
-  },
-]
-
-const workspaces = [
-  {
-    title: "Active Tenders",
-    url: "/tenders/active",
-    icon: FolderOpen,
-  },
-  {
-    title: "Draft Tenders",
-    url: "/tenders/drafts",
+    title: "Tenders",
+    url: "/tenders",
     icon: FileText,
   },
   {
@@ -51,13 +25,10 @@ const workspaces = [
     url: "/vendors",
     icon: Users,
   },
-]
-
-const other = [
   {
     title: "Settings",
     url: "/settings",
-    icon: Settings2,
+    icon: Settings,
   },
 ]
 
@@ -68,64 +39,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Menu className="h-4 w-4" />
-                  <span>Quick Find</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Home className="h-4 w-4" />
-                  <span>Dashboard</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarSeparator />
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Quick Access</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {quickActions.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {workspaces.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {other.map((item) => (
+              {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
