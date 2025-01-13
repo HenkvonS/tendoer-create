@@ -18,7 +18,7 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
   };
 
   return (
-    <Card className="hover:shadow-md transition-all duration-200 border border-gray-200">
+    <Card className="hover:shadow-md transition-all duration-200 border-0 shadow-sm bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-sm">
       <CardHeader className="p-4">
         <div className="flex justify-between items-start gap-4">
           <CardTitle className="text-base font-medium leading-none">{title}</CardTitle>
@@ -28,15 +28,15 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
       <CardContent className="p-4 pt-0">
         <div className="space-y-2.5">
           <div className="flex items-center text-sm text-gray-600">
-            <Building2 className="h-3.5 w-3.5 mr-2 text-gray-500" />
+            <Building2 className="h-3.5 w-3.5 mr-2 text-primary" />
             <span>{organization}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
-            <CalendarDays className="h-3.5 w-3.5 mr-2 text-gray-500" />
+            <CalendarDays className="h-3.5 w-3.5 mr-2 text-primary" />
             <span>Deadline: {deadline}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
-            <FileText className="h-3.5 w-3.5 mr-2 text-gray-500" />
+            <FileText className="h-3.5 w-3.5 mr-2 text-primary" />
             <span>Budget: {budget}</span>
           </div>
         </div>

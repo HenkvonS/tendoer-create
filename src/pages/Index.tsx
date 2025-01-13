@@ -37,7 +37,9 @@ const Index = () => {
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto">
       <div className="space-y-1">
-        <h1 className="text-2xl font-medium tracking-tight">{t('dashboard.title')}</h1>
+        <h1 className="text-2xl font-medium tracking-tight bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
+          {t('dashboard.title')}
+        </h1>
         <p className="text-sm text-gray-500">
           {t('dashboard.subtitle')}
         </p>
@@ -73,10 +75,10 @@ const Index = () => {
             placeholder={t('actions.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white/50 backdrop-blur-sm border-gray-200"
+            className="pl-9 bg-white/50 backdrop-blur-sm border-0 shadow-sm"
           />
         </div>
-        <Button variant="secondary" className="bg-gray-800 text-white hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600">
+        <Button className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 border-0 shadow-sm">
           {t('actions.createTender')}
         </Button>
       </div>
