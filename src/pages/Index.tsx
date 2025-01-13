@@ -34,7 +34,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-8">
+    <div className="space-y-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Tender Management Dashboard</h1>
         <p className="text-muted-foreground">
