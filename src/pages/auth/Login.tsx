@@ -5,24 +5,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared"
 import { supabase } from "@/integrations/supabase/client"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { AuthError, AuthApiError } from "@supabase/supabase-js"
-
-const getErrorMessage = (error: AuthError) => {
-  if (error instanceof AuthApiError) {
-    switch (error.status) {
-      case 400:
-        return 'Invalid credentials. Please check your email and password.'
-      case 422:
-        return 'Invalid email format. Please enter a valid email address.'
-      case 429:
-        return 'Too many login attempts. Please try again later.'
-      default:
-        return error.message
-    }
-  }
-  return error.message
-}
+import { useToast } from "@/components/ui/use-toast"
 
 export default function Login() {
   const navigate = useNavigate()
@@ -38,20 +21,17 @@ export default function Login() {
         })
         navigate("/")
       }
-      if (event === "SIGNED_OUT") {
-        navigate("/login")
-      }
     })
 
     return () => subscription.unsubscribe()
   }, [navigate, toast])
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-[400px]">
+    <div className="container max-w-[400px] mx-auto pt-8">
+      <Card>
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-medium">Welcome back</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
+          <CardDescription className="text-center">
             Sign in to your account to continue
           </CardDescription>
         </CardHeader>
@@ -63,8 +43,8 @@ export default function Login() {
               variables: {
                 default: {
                   colors: {
-                    brand: '#059669',
-                    brandAccent: '#047857',
+                    brand: 'rgb(var(--primary))',
+                    brandAccent: 'rgb(var(--primary))',
                   },
                 },
               },
@@ -74,8 +54,8 @@ export default function Login() {
                 input: 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
               }
             }}
-            theme="default"
-            providers={[]}
+            providers={["google"]}
+            redirectTo={window.location.origin}
           />
         </CardContent>
       </Card>
