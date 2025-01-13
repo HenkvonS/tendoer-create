@@ -8,13 +8,9 @@ import { AppSidebar } from "@/components/AppSidebar"
 import LanguageSelector from "@/components/LanguageSelector"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import { ThemeToggle } from "@/components/ThemeToggle"
-import { useEffect, useState } from "react"
-import { Session } from "@supabase/supabase-js"
-import { supabase } from "@/integrations/supabase/client"
 import Index from "./pages/Index"
 import Login from "./pages/auth/Login"
-import { useToast } from "@/hooks/use-toast"
-import "./i18n/config"
+import CreateTender from "./pages/tenders/CreateTender"
 
 const queryClient = new QueryClient()
 
@@ -44,6 +40,7 @@ const App = () => (
                         </div>
                         <Routes>
                           <Route path="/" element={<Index />} />
+                          <Route path="/tenders/create" element={<CreateTender />} />
                         </Routes>
                       </div>
                     </main>
