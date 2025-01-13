@@ -8,7 +8,8 @@ import {
   List,
   LayoutGrid,
   Menu,
-  Settings2
+  Settings2,
+  UserRound
 } from "lucide-react"
 import {
   Sidebar,
@@ -20,7 +21,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  SidebarHeader,
 } from "@/components/ui/sidebar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const quickActions = [
   {
@@ -64,6 +67,21 @@ const other = [
 export function AppSidebar() {
   return (
     <Sidebar>
+      <SidebarHeader className="border-b">
+        <div className="flex items-center gap-3 px-2 py-4">
+          <Avatar>
+            <AvatarImage src="/placeholder.svg" />
+            <AvatarFallback>
+              <UserRound className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">John Doe</span>
+            <span className="text-xs text-muted-foreground">Administrator</span>
+          </div>
+        </div>
+      </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
