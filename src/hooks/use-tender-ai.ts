@@ -9,13 +9,20 @@ export const useTenderAI = () => {
   const generateDescription = async (title: string) => {
     setIsGenerating(true);
     try {
-      const prompt = `Generate a professional tender description for: "${title}". Include key requirements, specifications, and evaluation criteria.`;
+      const prompt = `Generate a professional tender description for: "${title}". Include key requirements, specifications, and evaluation criteria. Keep it concise but comprehensive.`;
       
       const { data, error } = await supabase.functions.invoke('generate-tender', {
         body: { prompt },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error('Failed to generate description');
+      }
+
+      if (!data?.generatedText) {
+        throw new Error('No description was generated');
+      }
 
       return data.generatedText;
     } catch (error) {
