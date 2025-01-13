@@ -35,7 +35,7 @@ export default function Login() {
       }
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN") {
         toast({
           title: "Welcome!",
@@ -48,6 +48,17 @@ export default function Login() {
       }
       if (event === "USER_UPDATED") {
         navigate("/")
+      }
+      // Handle auth errors
+      if (event === 'PASSWORD_RECOVERY' || event === 'USER_UPDATED') {
+        const { error } = await supabase.auth.getSession()
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: getErrorMessage(error),
+          })
+        }
       }
     })
 
@@ -84,13 +95,6 @@ export default function Login() {
             }}
             theme="default"
             providers={[]}
-            onError={(error) => {
-              toast({
-                variant: "destructive",
-                title: "Error",
-                description: getErrorMessage(error),
-              })
-            }}
           />
         </CardContent>
       </Card>
