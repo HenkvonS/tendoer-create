@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar"
 import Index from "./pages/Index"
+import "./i18n/config"
 
 const queryClient = new QueryClient()
 
@@ -20,7 +21,9 @@ const App = () => (
             <AppSidebar />
             <main className="flex-1">
               <div className="container p-6">
-                <SidebarTrigger className="mb-4" />
+                <div className="flex justify-between items-center mb-4">
+                  <SidebarTrigger />
+                </div>
                 <Routes>
                   <Route path="/" element={<Index />} />
                 </Routes>
