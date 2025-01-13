@@ -13,6 +13,7 @@ import { Session } from "@supabase/supabase-js"
 import { supabase } from "@/integrations/supabase/client"
 import Index from "./pages/Index"
 import Login from "./pages/auth/Login"
+import { useToast } from "@/hooks/use-toast"
 import "./i18n/config"
 
 const queryClient = new QueryClient()
@@ -20,7 +21,8 @@ const queryClient = new QueryClient()
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-
+  const { toast } = useToast()
+  
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -31,13 +33,23 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      if (!session) {
+        toast({
+          title: "Session expired",
+          description: "Please sign in again to continue.",
+        })
+      }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [toast])
 
   if (loading) {
-    return null
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    )
   }
 
   if (!session) {
