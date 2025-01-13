@@ -36,11 +36,11 @@ const Index = () => {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-[1200px] mx-auto">
       <div className="flex justify-between items-start">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h1>
-          <p className="text-muted-foreground">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-medium tracking-tight">{t('dashboard.title')}</h1>
+          <p className="text-sm text-gray-500">
             {t('dashboard.subtitle')}
           </p>
         </div>
@@ -51,36 +51,38 @@ const Index = () => {
         <StatsCard
           title={t('stats.totalTenders')}
           value="12"
-          icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+          icon={<FileText className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.activeTenders')}
           value="4"
-          icon={<TrendingUp className="h-4 w-4 text-success" />}
+          icon={<TrendingUp className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.participatingVendors')}
           value="28"
-          icon={<Users className="h-4 w-4 text-muted-foreground" />}
+          icon={<Users className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.pendingReviews')}
           value="3"
-          icon={<AlertCircle className="h-4 w-4 text-destructive" />}
+          icon={<AlertCircle className="h-4 w-4" />}
         />
       </div>
 
       <div className="flex items-center space-x-2">
         <div className="relative flex-1">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
           <Input
             placeholder={t('actions.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8"
+            className="pl-9 bg-white/50 backdrop-blur-sm border-gray-200"
           />
         </div>
-        <Button>{t('actions.createTender')}</Button>
+        <Button variant="outline" className="bg-white hover:bg-gray-50">
+          {t('actions.createTender')}
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
