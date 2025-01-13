@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import TenderCard from "@/components/TenderCard";
 import StatsCard from "@/components/StatsCard";
 import LanguageSelector from "@/components/LanguageSelector";
-import { Search, FileText, Users, TrendingUp, AlertCircle, DollarSign, Clock, CheckCircle } from "lucide-react";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, CartesianGrid, Tooltip, Legend } from "recharts";
+import { Search, FileText, Users, TrendingUp, AlertCircle } from "lucide-react";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -37,22 +35,6 @@ const Index = () => {
     },
   ];
 
-  const monthlyTenders = [
-    { month: 'Jan', active: 4, completed: 2, draft: 3 },
-    { month: 'Feb', active: 6, completed: 4, draft: 2 },
-    { month: 'Mar', active: 5, completed: 3, draft: 4 },
-    { month: 'Apr', active: 8, completed: 5, draft: 3 },
-    { month: 'May', active: 7, completed: 6, draft: 2 },
-    { month: 'Jun', active: 9, completed: 4, draft: 5 },
-  ];
-
-  const budgetData = [
-    { name: 'Week 1', amount: 500000 },
-    { name: 'Week 2', amount: 800000 },
-    { name: 'Week 3', amount: 1200000 },
-    { name: 'Week 4', amount: 900000 },
-  ];
-
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto">
       <div className="flex justify-between items-start">
@@ -75,71 +57,17 @@ const Index = () => {
           title={t('stats.activeTenders')}
           value="4"
           icon={<TrendingUp className="h-4 w-4" />}
-          description="25% increase from last month"
         />
         <StatsCard
-          title={t('stats.totalBudget')}
-          value="$3.25M"
-          icon={<DollarSign className="h-4 w-4" />}
-          description="Total active tender value"
+          title={t('stats.participatingVendors')}
+          value="28"
+          icon={<Users className="h-4 w-4" />}
         />
         <StatsCard
-          title={t('stats.avgCompletionTime')}
-          value="45 days"
-          icon={<Clock className="h-4 w-4" />}
-          description="Average tender completion time"
+          title={t('stats.pendingReviews')}
+          value="3"
+          icon={<AlertCircle className="h-4 w-4" />}
         />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border bg-white/50 backdrop-blur-sm p-4">
-          <h3 className="font-medium mb-4">Monthly Tender Activity</h3>
-          <div className="h-[300px]">
-            <ChartContainer
-              config={{
-                active: { theme: { light: "#1E40AF" } },
-                completed: { theme: { light: "#059669" } },
-                draft: { theme: { light: "#64748b" } },
-              }}
-            >
-              <BarChart data={monthlyTenders}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend />
-                <Bar dataKey="active" name="Active" fill="var(--color-active)" />
-                <Bar dataKey="completed" name="Completed" fill="var(--color-completed)" />
-                <Bar dataKey="draft" name="Draft" fill="var(--color-draft)" />
-              </BarChart>
-            </ChartContainer>
-          </div>
-        </div>
-
-        <div className="rounded-lg border bg-white/50 backdrop-blur-sm p-4">
-          <h3 className="font-medium mb-4">Budget Allocation Trend</h3>
-          <div className="h-[300px]">
-            <ChartContainer
-              config={{
-                amount: { theme: { light: "#1E40AF" } },
-              }}
-            >
-              <LineChart data={budgetData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="amount" 
-                  name="Budget" 
-                  stroke="var(--color-amount)"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ChartContainer>
-          </div>
-        </div>
       </div>
 
       <div className="flex items-center space-x-2">
