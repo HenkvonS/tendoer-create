@@ -7,8 +7,8 @@ import StatsCard from "@/components/StatsCard";
 import { Search, FileText, Users, TrendingUp, AlertCircle } from "lucide-react";
 
 const Index = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const tenders = [
     {
