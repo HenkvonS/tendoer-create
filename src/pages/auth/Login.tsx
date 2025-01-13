@@ -12,7 +12,7 @@ const getErrorMessage = (error: AuthError) => {
   if (error instanceof AuthApiError) {
     switch (error.status) {
       case 400:
-        return 'Invalid credentials. Please check your email and password.'
+        return 'Invalid credentials. Please check your email and password, or sign up if you don\'t have an account.'
       case 422:
         return 'Invalid email format. Please enter a valid email address.'
       case 429:
@@ -29,17 +29,25 @@ export default function Login() {
   const { toast } = useToast()
 
   useEffect(() => {
-    // Check if user is already logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/")
+      }
+    })
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
         toast({
-          title: "Welcome back!",
+          title: "Welcome!",
           description: "You have successfully signed in.",
         })
         navigate("/")
       }
       if (event === "SIGNED_OUT") {
         navigate("/login")
+      }
+      if (event === "USER_UPDATED") {
+        navigate("/")
       }
     })
 
@@ -50,9 +58,9 @@ export default function Login() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-[400px]">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-medium">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-medium">Welcome</CardTitle>
           <CardDescription>
-            Sign in to your account to continue
+            Sign in to your account or create a new one
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -76,6 +84,13 @@ export default function Login() {
             }}
             theme="default"
             providers={[]}
+            onError={(error) => {
+              toast({
+                variant: "destructive",
+                title: "Error",
+                description: getErrorMessage(error),
+              })
+            }}
           />
         </CardContent>
       </Card>
