@@ -107,10 +107,10 @@ const CreateTender = () => {
   }
 
   return (
-    <div className="container max-w-3xl py-4 px-4 md:py-8 md:px-0">
+    <div className="container max-w-3xl py-6 px-4 md:py-10 md:px-0">
       <Button
         variant="ghost"
-        className="mb-4 md:mb-6"
+        className="mb-6 md:mb-8"
         onClick={() => navigate(-1)}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -118,7 +118,7 @@ const CreateTender = () => {
       </Button>
 
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="space-y-3">
           <CardTitle className="text-xl md:text-2xl">{t("Create New Tender")}</CardTitle>
           <CardDescription className="text-sm md:text-base">
             Create a new tender for your organization. Fill in the details below or use AI to help generate content.
@@ -127,12 +127,12 @@ const CreateTender = () => {
 
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-3">
                     <FormLabel>{t("Title")}</FormLabel>
                     <FormControl>
                       <Input placeholder="Enter tender title" {...field} />
@@ -149,7 +149,7 @@ const CreateTender = () => {
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="space-y-3">
                     <FormLabel className="flex items-center justify-between">
                       {t("Description")}
                       <Button
@@ -167,7 +167,7 @@ const CreateTender = () => {
                     <FormControl>
                       <Textarea 
                         placeholder="Describe the tender requirements and specifications"
-                        className="min-h-[120px] md:min-h-[160px]"
+                        className="min-h-[140px] md:min-h-[180px]"
                         {...field} 
                       />
                     </FormControl>
@@ -179,12 +179,12 @@ const CreateTender = () => {
                 )}
               />
 
-              <div className="grid gap-4 md:gap-6 md:grid-cols-2">
+              <div className="grid gap-6 md:gap-8 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="budget"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-3">
                       <FormLabel>{t("Budget")}</FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -210,7 +210,7 @@ const CreateTender = () => {
                   control={form.control}
                   name="deadline"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-3">
                       <FormLabel>{t("Deadline")}</FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -231,7 +231,7 @@ const CreateTender = () => {
                 />
               </div>
 
-              <CardFooter className="px-0 pb-0">
+              <CardFooter className="px-0 pb-0 pt-2">
                 <Button type="submit" className="w-full">
                   {t("Create Tender")}
                 </Button>
