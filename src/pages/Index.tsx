@@ -79,13 +79,9 @@ const Index = () => {
 
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto">
-      <div className="space-y-1">
-        <h1 className="text-xl font-bold tracking-tight text-gray-900">
-          {t('dashboard.title')}
-        </h1>
-        <p className="text-sm text-gray-500">
-          {t('dashboard.subtitle')}
-        </p>
+      <div>
+        <h1 className="text-xl font-bold">{t('dashboard.title')}</h1>
+        <p className="text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -111,18 +107,18 @@ const Index = () => {
         />
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center gap-2">
         <div className="relative flex-1 group">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:scale-110" />
           <Input
             placeholder={t('actions.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white border border-gray-200 transition-all duration-200 hover:border-gray-300 focus:border-gray-300 focus:ring-0 hover:shadow-sm"
+            className="pl-9 transition-all duration-200 hover:shadow-sm"
           />
         </div>
         <Link to="/tenders/create">
-          <Button className="bg-gray-900 hover:bg-gray-800 text-white border-0 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+          <Button className="bg-primary hover:translate-y-0.5 transition-all duration-200 hover:shadow-md">
             {t('actions.createTender')}
           </Button>
         </Link>

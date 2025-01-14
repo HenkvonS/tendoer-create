@@ -12,37 +12,37 @@ interface TenderCardProps {
 
 const TenderCard = ({ title, organization, deadline, status, budget }: TenderCardProps) => {
   const statusColors = {
-    draft: "bg-gray-100 text-gray-600 hover:bg-gray-200",
-    active: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100",
-    closed: "bg-red-50 text-red-600 hover:bg-red-100",
+    draft: "bg-secondary",
+    active: "bg-emerald-100 text-emerald-700",
+    closed: "bg-destructive/10 text-destructive",
   };
 
   return (
-    <Card className="group transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg border border-gray-100">
+    <Card className="group transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
       <CardHeader className="p-4">
         <div className="flex justify-between items-start gap-4">
-          <CardTitle className="text-base font-medium leading-none text-gray-900 transition-colors duration-200 group-hover:text-primary">{title}</CardTitle>
-          <Badge className={`${statusColors[status]} font-normal transition-colors duration-200`}>{status}</Badge>
+          <CardTitle className="text-base font-medium transition-colors duration-200 group-hover:text-primary">
+            {title}
+          </CardTitle>
+          <Badge variant="secondary" className={statusColors[status]}>
+            {status}
+          </Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <div className="space-y-2.5">
-          <div className="flex items-center text-sm text-gray-600 transition-transform duration-200 hover:translate-x-1">
-            <Building2 className="h-3.5 w-3.5 mr-2 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
-            <span>{organization}</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-600 transition-transform duration-200 hover:translate-x-1">
-            <CalendarDays className="h-3.5 w-3.5 mr-2 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
-            <span>Deadline: {deadline}</span>
-          </div>
-          <div className="flex items-center text-sm text-gray-600 transition-transform duration-200 hover:translate-x-1">
-            <FileText className="h-3.5 w-3.5 mr-2 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
-            <span>Budget: {budget}</span>
-          </div>
-        </div>
+      <CardContent className="p-4 pt-0 space-y-2.5">
+        <InfoRow icon={Building2} text={organization} />
+        <InfoRow icon={CalendarDays} text={`Deadline: ${deadline}`} />
+        <InfoRow icon={FileText} text={`Budget: ${budget}`} />
       </CardContent>
     </Card>
   );
 };
+
+const InfoRow = ({ icon: Icon, text }: { icon: any; text: string }) => (
+  <div className="flex items-center text-sm text-muted-foreground transition-transform duration-200 hover:translate-x-1">
+    <Icon className="h-3.5 w-3.5 mr-2 transition-transform duration-200 group-hover:scale-110" />
+    <span>{text}</span>
+  </div>
+);
 
 export default TenderCard;
