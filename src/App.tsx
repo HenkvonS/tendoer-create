@@ -29,14 +29,16 @@ const App = () => (
                 <div className="flex min-h-screen w-full">
                   <AppSidebar />
                   <main className="flex-1">
-                    <div className="container p-6">
-                      <div className="flex justify-between items-center mb-4">
+                    <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                      <div className="container flex h-14 items-center justify-between">
                         <SidebarTrigger />
                         <div className="flex items-center gap-4">
                           <ThemeToggle />
                           <LanguageSelector />
                         </div>
                       </div>
+                    </header>
+                    <div className="container p-6">
                       <Routes>
                         <Route path="/" element={<Index />} />
                         <Route path="/tenders/create" element={<CreateTender />} />
