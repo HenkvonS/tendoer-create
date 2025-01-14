@@ -7,17 +7,14 @@ import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { createPlugins } from '@udecode/plate-core';
+import { Plate, PlateContent } from '@udecode/plate-common';
 import {
-  createPlateUI,
-  Plate,
-  createPlugins,
-  PlateContent,
   createParagraphPlugin,
   createBlockquotePlugin,
   createCodeBlockPlugin,
   createHeadingPlugin,
-  PlateEditor,
-} from '@udecode/plate';
+} from '@udecode/plate-basic-elements';
 
 // Define the type for our editor's content
 type PlateContent = {
@@ -30,9 +27,7 @@ const plugins = createPlugins([
   createBlockquotePlugin(),
   createCodeBlockPlugin(),
   createHeadingPlugin(),
-], {
-  components: createPlateUI(),
-});
+]);
 
 const EditTender = () => {
   const { id } = useParams();
