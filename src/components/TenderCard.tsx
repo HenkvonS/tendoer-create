@@ -39,7 +39,7 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
 };
 
 const InfoRow = ({ icon: Icon, text }: { icon: any; text: string }) => (
-  <div className="flex items-center text-sm text-muted-foreground transition-transform duration-200 hover:translate-x-1">
+  <div className="flex items-center text-sm text-muted-foreground">
     <Icon className="h-3.5 w-3.5 mr-2 transition-transform duration-200 group-hover:scale-110" />
     <span>{text}</span>
   </div>
