@@ -38,7 +38,7 @@ const Index = () => {
   return (
     <div className="space-y-8 max-w-[1200px] mx-auto">
       <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
           {t('dashboard.title')}
         </h1>
         <p className="text-sm text-gray-500">
