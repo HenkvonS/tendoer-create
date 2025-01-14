@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import TenderCard from "@/components/TenderCard";
 import TenderList from "@/components/TenderList";
 import StatsCard from "@/components/StatsCard";
+import OrganizationProfile from "@/components/OrganizationProfile";
 import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List } from "lucide-react";
 
 const Index = () => {
@@ -145,6 +146,8 @@ const Index = () => {
         <h1 className="text-xl font-bold md:text-2xl">{t('dashboard.title')}</h1>
         <p className="text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
       </div>
+
+      <OrganizationProfile />
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
