@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import TenderCard from "@/components/TenderCard";
 import TenderList from "@/components/TenderList";
 import StatsCard from "@/components/StatsCard";
-import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List, ArrowUpDown } from "lucide-react";
+import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List } from "lucide-react";
 import { sortTenders, SortConfig } from "@/utils/sortTenders";
 
 const Index = () => {
@@ -237,23 +237,6 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="flex gap-2 flex-wrap">
-        {["title", "organization", "deadline", "budget", "status"].map((field) => (
-          <Button
-            key={field}
-            variant="outline"
-            size="sm"
-            onClick={() => handleSort(field as SortConfig["field"])}
-            className={`flex items-center gap-1 ${
-              sortConfig.field === field ? "bg-muted" : ""
-            }`}
-          >
-            {t(field)}
-            <ArrowUpDown className="h-3 w-3" />
-          </Button>
-        ))}
-      </div>
-
       {viewMode === "grid" ? (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {sortedTenders.map((tender, index) => (
@@ -261,7 +244,11 @@ const Index = () => {
           ))}
         </div>
       ) : (
-        <TenderList tenders={sortedTenders} />
+        <TenderList 
+          tenders={sortedTenders}
+          sortConfig={sortConfig}
+          onSort={handleSort}
+        />
       )}
     </div>
   );
