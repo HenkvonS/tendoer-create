@@ -49,10 +49,8 @@ const CreateTender = () => {
   const adjustTextareaHeight = () => {
     const textarea = descriptionRef.current
     if (textarea) {
-      // Reset height to auto to get the correct scrollHeight
       textarea.style.height = 'auto'
-      // Add extra padding to prevent scrollbar flicker
-      textarea.style.height = `${textarea.scrollHeight + 2}px`
+      textarea.style.height = `${textarea.scrollHeight}px`
     }
   }
 
@@ -60,8 +58,7 @@ const CreateTender = () => {
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === 'description') {
-        // Use RAF to ensure DOM has updated
-        requestAnimationFrame(adjustTextareaHeight)
+        adjustTextareaHeight()
       }
     })
     return () => subscription.unsubscribe()
@@ -81,12 +78,8 @@ const CreateTender = () => {
     const description = await generateDescription(title)
     if (description) {
       form.setValue("description", description)
-      // Use multiple timeouts to ensure proper resizing after content update
-      setTimeout(() => {
-        adjustTextareaHeight()
-        // Double-check the height after a brief delay
-        setTimeout(adjustTextareaHeight, 50)
-      }, 0)
+      // Ensure the textarea height adjusts after AI generation
+      setTimeout(adjustTextareaHeight, 0)
       toast({
         title: "Success",
         description: "AI description generated successfully",
