@@ -74,6 +74,48 @@ const Index = () => {
       deadline: "2024-06-15",
       status: "draft" as const,
       budget: "$450,000",
+    },
+    {
+      title: "Water Treatment Plant Upgrade",
+      organization: "Water Resources Department",
+      deadline: "2024-08-30",
+      status: "active" as const,
+      budget: "$4,200,000",
+    },
+    {
+      title: "Solar Panel Installation Project",
+      organization: "Energy Commission",
+      deadline: "2024-07-15",
+      status: "draft" as const,
+      budget: "$2,800,000",
+    },
+    {
+      title: "Road Infrastructure Maintenance",
+      organization: "Highway Authority",
+      deadline: "2024-09-01",
+      status: "active" as const,
+      budget: "$5,500,000",
+    },
+    {
+      title: "Public Housing Development",
+      organization: "Housing Department",
+      deadline: "2024-08-15",
+      status: "draft" as const,
+      budget: "$7,200,000",
+    },
+    {
+      title: "Municipal Waste Recycling Program",
+      organization: "Environmental Protection Agency",
+      deadline: "2024-07-30",
+      status: "active" as const,
+      budget: "$900,000",
+    },
+    {
+      title: "Public Library Modernization",
+      organization: "Cultural Affairs Department",
+      deadline: "2024-08-20",
+      status: "draft" as const,
+      budget: "$650,000",
     }
   ];
 
@@ -87,22 +129,22 @@ const Index = () => {
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title={t('stats.totalTenders')}
-          value="12"
+          value="15"
           icon={<FileText className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.activeTenders')}
-          value="4"
+          value="7"
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.participatingVendors')}
-          value="28"
+          value="42"
           icon={<Users className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.pendingReviews')}
-          value="3"
+          value="5"
           icon={<AlertCircle className="h-4 w-4" />}
         />
       </div>
