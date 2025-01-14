@@ -18,25 +18,25 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
   };
 
   return (
-    <Card className="group hover:bg-gray-50/50 transition-all duration-200 border border-gray-100">
+    <Card className="group transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-lg border border-gray-100">
       <CardHeader className="p-4">
         <div className="flex justify-between items-start gap-4">
-          <CardTitle className="text-base font-medium leading-none text-gray-900">{title}</CardTitle>
-          <Badge className={`${statusColors[status]} font-normal`}>{status}</Badge>
+          <CardTitle className="text-base font-medium leading-none text-gray-900 transition-colors duration-200 group-hover:text-primary">{title}</CardTitle>
+          <Badge className={`${statusColors[status]} font-normal transition-colors duration-200`}>{status}</Badge>
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <div className="space-y-2.5">
-          <div className="flex items-center text-sm text-gray-600">
-            <Building2 className="h-3.5 w-3.5 mr-2 text-gray-400" />
+          <div className="flex items-center text-sm text-gray-600 transition-transform duration-200 hover:translate-x-1">
+            <Building2 className="h-3.5 w-3.5 mr-2 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
             <span>{organization}</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
-            <CalendarDays className="h-3.5 w-3.5 mr-2 text-gray-400" />
+          <div className="flex items-center text-sm text-gray-600 transition-transform duration-200 hover:translate-x-1">
+            <CalendarDays className="h-3.5 w-3.5 mr-2 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
             <span>Deadline: {deadline}</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
-            <FileText className="h-3.5 w-3.5 mr-2 text-gray-400" />
+          <div className="flex items-center text-sm text-gray-600 transition-transform duration-200 hover:translate-x-1">
+            <FileText className="h-3.5 w-3.5 mr-2 text-gray-400 transition-transform duration-200 group-hover:scale-110" />
             <span>Budget: {budget}</span>
           </div>
         </div>
