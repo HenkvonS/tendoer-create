@@ -27,49 +27,51 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
-
-const quickActions = [
-  {
-    title: "All Tenders",
-    url: "/",
-    icon: LayoutGrid,
-  },
-  {
-    title: "Recent",
-    url: "/recent",
-    icon: List,
-  },
-]
-
-const workspaces = [
-  {
-    title: "Active Tenders",
-    url: "/tenders/active",
-    icon: FolderOpen,
-  },
-  {
-    title: "Draft Tenders",
-    url: "/tenders/drafts",
-    icon: FileText,
-  },
-  {
-    title: "Vendors",
-    url: "/vendors",
-    icon: Users,
-  },
-]
-
-const other = [
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings2,
-  },
-]
+import { useTranslation } from "react-i18next"
 
 export function AppSidebar() {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { t } = useTranslation()
+
+  const quickActions = [
+    {
+      title: t('menu.allTenders'),
+      url: "/",
+      icon: LayoutGrid,
+    },
+    {
+      title: t('menu.recent'),
+      url: "/recent",
+      icon: List,
+    },
+  ]
+
+  const workspaces = [
+    {
+      title: t('menu.activeTenders'),
+      url: "/tenders/active",
+      icon: FolderOpen,
+    },
+    {
+      title: t('menu.draftTenders'),
+      url: "/tenders/drafts",
+      icon: FileText,
+    },
+    {
+      title: t('menu.vendors'),
+      url: "/vendors",
+      icon: Users,
+    },
+  ]
+
+  const other = [
+    {
+      title: t('menu.settings'),
+      url: "/settings",
+      icon: Settings2,
+    },
+  ]
 
   const handleLogout = async () => {
     try {
@@ -77,7 +79,7 @@ export function AppSidebar() {
       if (error) throw error
 
       toast({
-        title: "Logged out",
+        title: t('menu.logout'),
         description: "You have been successfully logged out.",
       })
       
@@ -116,13 +118,13 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton>
                   <Menu className="h-4 w-4" />
-                  <span>Quick Find</span>
+                  <span>{t('menu.quickFind')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>
                   <Home className="h-4 w-4" />
-                  <span>Dashboard</span>
+                  <span>{t('menu.dashboard')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -132,7 +134,7 @@ export function AppSidebar() {
         <SidebarSeparator />
 
         <SidebarGroup>
-          <SidebarGroupLabel>Quick Access</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('menu.quickAccess')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {quickActions.map((item) => (
@@ -150,7 +152,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Workspaces</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('menu.workspaces')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {workspaces.map((item) => (
@@ -183,7 +185,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout}>
                   <LogOut className="h-4 w-4" />
-                  <span>Logout</span>
+                  <span>{t('menu.logout')}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

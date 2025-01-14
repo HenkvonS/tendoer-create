@@ -21,7 +21,25 @@ const resources = {
       tender: {
         deadline: "Deadline",
         budget: "Budget",
+        status: {
+          draft: "Draft",
+          active: "Active",
+          closed: "Closed"
+        }
       },
+      menu: {
+        quickFind: "Quick Find",
+        dashboard: "Dashboard",
+        quickAccess: "Quick Access",
+        allTenders: "All Tenders",
+        recent: "Recent",
+        workspaces: "Workspaces",
+        activeTenders: "Active Tenders",
+        draftTenders: "Draft Tenders",
+        vendors: "Vendors",
+        settings: "Settings",
+        logout: "Logout"
+      }
     },
   },
   es: {
@@ -43,7 +61,25 @@ const resources = {
       tender: {
         deadline: "Fecha límite",
         budget: "Presupuesto",
+        status: {
+          draft: "Borrador",
+          active: "Activa",
+          closed: "Cerrada"
+        }
       },
+      menu: {
+        quickFind: "Búsqueda Rápida",
+        dashboard: "Panel",
+        quickAccess: "Acceso Rápido",
+        allTenders: "Todas las Licitaciones",
+        recent: "Recientes",
+        workspaces: "Espacios de Trabajo",
+        activeTenders: "Licitaciones Activas",
+        draftTenders: "Licitaciones en Borrador",
+        vendors: "Proveedores",
+        settings: "Configuración",
+        logout: "Cerrar Sesión"
+      }
     },
   },
   de: {
@@ -65,29 +101,65 @@ const resources = {
       tender: {
         deadline: "Frist",
         budget: "Budget",
+        status: {
+          draft: "Entwurf",
+          active: "Aktiv",
+          closed: "Geschlossen"
+        }
       },
+      menu: {
+        quickFind: "Schnellsuche",
+        dashboard: "Dashboard",
+        quickAccess: "Schnellzugriff",
+        allTenders: "Alle Ausschreibungen",
+        recent: "Kürzlich",
+        workspaces: "Arbeitsbereiche",
+        activeTenders: "Aktive Ausschreibungen",
+        draftTenders: "Ausschreibungsentwürfe",
+        vendors: "Anbieter",
+        settings: "Einstellungen",
+        logout: "Abmelden"
+      }
     },
   },
   sv: {
     translation: {
       dashboard: {
-        title: "Anbudshanteringspanel",
-        subtitle: "Hantera och spåra alla dina anbudsprocesser effektivt",
+        title: "Upphandlingshantering",
+        subtitle: "Hantera och följ alla dina upphandlingsprocesser effektivt",
       },
       stats: {
-        totalTenders: "Totala anbud",
-        activeTenders: "Aktiva anbud",
+        totalTenders: "Totala upphandlingar",
+        activeTenders: "Aktiva upphandlingar",
         participatingVendors: "Deltagande leverantörer",
         pendingReviews: "Väntande granskningar",
       },
       actions: {
-        search: "Sök anbud...",
-        createTender: "Skapa anbud",
+        search: "Sök upphandlingar...",
+        createTender: "Skapa upphandling",
       },
       tender: {
         deadline: "Tidsfrist",
         budget: "Budget",
+        status: {
+          draft: "Utkast",
+          active: "Aktiv",
+          closed: "Avslutad"
+        }
       },
+      menu: {
+        quickFind: "Snabbsökning",
+        dashboard: "Översikt",
+        quickAccess: "Snabbåtkomst",
+        allTenders: "Alla upphandlingar",
+        recent: "Senaste",
+        workspaces: "Arbetsytor",
+        activeTenders: "Aktiva upphandlingar",
+        draftTenders: "Upphandlingsutkast",
+        vendors: "Leverantörer",
+        settings: "Inställningar",
+        logout: "Logga ut"
+      }
     },
   },
 };
