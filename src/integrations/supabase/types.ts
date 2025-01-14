@@ -9,10 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      meters: {
+      dashboard_layouts: {
         Row: {
           created_at: string
           id: string
+          layout: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          layout: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          layout?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meters: {
+        Row: {
+          brand: string | null
+          created_at: string
+          id: string
+          install_date: string | null
           last_reading: string | null
           latitude: number | null
           location: string
@@ -22,8 +48,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          brand?: string | null
           created_at?: string
           id: string
+          install_date?: string | null
           last_reading?: string | null
           latitude?: number | null
           location: string
@@ -33,8 +61,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          brand?: string | null
           created_at?: string
           id?: string
+          install_date?: string | null
           last_reading?: string | null
           latitude?: number | null
           location?: string
