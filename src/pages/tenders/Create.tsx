@@ -107,99 +107,43 @@ const CreateTender = () => {
   }
 
   return (
-    <div className="container max-w-3xl py-6 px-4 md:py-10 md:px-0">
-      <Button
-        variant="ghost"
-        className="mb-6 md:mb-8"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back
-      </Button>
+    <div className="min-h-screen bg-background">
+      <div className="container max-w-5xl px-4 py-6 md:px-6 lg:px-8">
+        <Button
+          variant="ghost"
+          className="mb-6"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
 
-      <Card className="w-full">
-        <CardHeader className="space-y-3">
-          <CardTitle className="text-xl md:text-2xl">{t("Create New Tender")}</CardTitle>
-          <CardDescription className="text-sm md:text-base">
-            Create a new tender for your organization. Fill in the details below or use AI to help generate content.
-          </CardDescription>
-        </CardHeader>
+        <Card className="w-full">
+          <CardHeader className="space-y-3 md:space-y-4">
+            <CardTitle className="text-2xl md:text-3xl font-bold">{t("Create New Tender")}</CardTitle>
+            <CardDescription className="text-base md:text-lg">
+              Create a new tender for your organization. Fill in the details below or use AI to help generate content.
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 md:space-y-8">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>{t("Title")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter tender title" {...field} />
-                    </FormControl>
-                    <FormDescription className="text-xs md:text-sm">
-                      Give your tender a clear and descriptive title
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="flex items-center justify-between">
-                      {t("Description")}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleGenerateDescription}
-                        disabled={isGenerating}
-                        className="text-xs md:text-sm"
-                      >
-                        <Wand2 className="mr-2 h-3 w-3 md:h-4 md:w-4" />
-                        {isGenerating ? "Generating..." : "Generate with AI"}
-                      </Button>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe the tender requirements and specifications"
-                        className="min-h-[140px] md:min-h-[180px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription className="text-xs md:text-sm">
-                      Provide detailed information about the tender or use AI to generate a description
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid gap-6 md:gap-8 md:grid-cols-2">
+          <CardContent className="p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                   control={form.control}
-                  name="budget"
+                  name="title"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>{t("Budget")}</FormLabel>
+                      <FormLabel className="text-lg">{t("Title")}</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input 
-                            type="number" 
-                            step="0.01" 
-                            placeholder="Enter budget amount"
-                            className="pl-10"
-                            {...field} 
-                          />
-                        </div>
+                        <Input 
+                          placeholder="Enter tender title" 
+                          className="text-lg py-6" 
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormDescription className="text-xs md:text-sm">
-                        Optional: Specify the tender budget
+                      <FormDescription className="text-sm">
+                        Give your tender a clear and descriptive title
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -208,38 +152,99 @@ const CreateTender = () => {
 
                 <FormField
                   control={form.control}
-                  name="deadline"
+                  name="description"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>{t("Deadline")}</FormLabel>
+                      <FormLabel className="flex items-center justify-between text-lg">
+                        {t("Description")}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleGenerateDescription}
+                          disabled={isGenerating}
+                          className="text-sm"
+                        >
+                          <Wand2 className="mr-2 h-4 w-4" />
+                          {isGenerating ? "Generating..." : "Generate with AI"}
+                        </Button>
+                      </FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input 
-                            type="datetime-local"
-                            className="pl-10"
-                            {...field}
-                          />
-                        </div>
+                        <Textarea 
+                          placeholder="Describe the tender requirements and specifications"
+                          className="min-h-[200px] text-lg leading-relaxed"
+                          {...field} 
+                        />
                       </FormControl>
-                      <FormDescription className="text-xs md:text-sm">
-                        Optional: Set a submission deadline
+                      <FormDescription className="text-sm">
+                        Provide detailed information about the tender or use AI to generate a description
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
 
-              <CardFooter className="px-0 pb-0 pt-2">
-                <Button type="submit" className="w-full">
-                  {t("Create Tender")}
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                <div className="grid gap-8 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="budget"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-lg">{t("Budget")}</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <DollarSign className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                            <Input 
+                              type="number" 
+                              step="0.01" 
+                              placeholder="Enter budget amount"
+                              className="pl-10 text-lg py-6"
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-sm">
+                          Optional: Specify the tender budget
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deadline"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-lg">{t("Deadline")}</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Calendar className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+                            <Input 
+                              type="datetime-local"
+                              className="pl-10 text-lg py-6"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-sm">
+                          Optional: Set a submission deadline
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <CardFooter className="px-0 pb-0 pt-4">
+                  <Button type="submit" size="lg" className="w-full text-lg py-6">
+                    {t("Create Tender")}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
