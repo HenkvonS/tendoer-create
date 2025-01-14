@@ -1,74 +1,18 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  createEditor,
-  createPlateUI,
-  Plate as PlateRoot,
-  PlateContent as PlateEditor,
-  createPlugins as createPlatePlugins,
-  withHistory,
-  withReact,
-} from '@udecode/plate';
-import {
-  ELEMENT_PARAGRAPH,
-  ELEMENT_H1,
-  ELEMENT_H2,
-  ELEMENT_BLOCKQUOTE,
-  ELEMENT_CODE_BLOCK,
-} from '@udecode/plate-headless';
-
-// Define the type for our editor's content
-type PlateContent = {
-  type: string;
-  children: { text: string }[];
-}[];
-
-const plugins = createPlatePlugins([
-  {
-    key: ELEMENT_PARAGRAPH,
-    type: ELEMENT_PARAGRAPH,
-    component: createPlateUI().p,
-  },
-  {
-    key: ELEMENT_H1,
-    type: ELEMENT_H1,
-    component: createPlateUI().h1,
-  },
-  {
-    key: ELEMENT_H2,
-    type: ELEMENT_H2,
-    component: createPlateUI().h2,
-  },
-  {
-    key: ELEMENT_BLOCKQUOTE,
-    type: ELEMENT_BLOCKQUOTE,
-    component: createPlateUI().blockquote,
-  },
-  {
-    key: ELEMENT_CODE_BLOCK,
-    type: ELEMENT_CODE_BLOCK,
-    component: createPlateUI().code,
-  },
-]);
 
 const EditTender = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [content, setContent] = useState<PlateContent>([
-    {
-      type: 'p',
-      children: [{ text: '' }],
-    },
-  ]);
-
-  const editor = withHistory(withReact(createEditor()));
+  const [content, setContent] = useState("");
 
   const { data: tender, isLoading } = useQuery({
     queryKey: ["tender", id],
@@ -97,23 +41,7 @@ const EditTender = () => {
         throw new Error("Tender not found");
       }
 
-      try {
-        const parsedContent = data.description ? JSON.parse(data.description) : [
-          {
-            type: 'p',
-            children: [{ text: '' }],
-          },
-        ];
-        setContent(parsedContent);
-      } catch (e) {
-        setContent([
-          {
-            type: 'p',
-            children: [{ text: data.description || '' }],
-          },
-        ]);
-      }
-      
+      setContent(data.description || "");
       return data;
     },
     retry: false,
@@ -125,7 +53,7 @@ const EditTender = () => {
     try {
       const { error } = await supabase
         .from("tenders")
-        .update({ description: JSON.stringify(content) })
+        .update({ description: content })
         .eq("id", id);
 
       if (error) throw error;
@@ -137,12 +65,8 @@ const EditTender = () => {
   };
 
   const handleExport = () => {
-    const plainText = content.map((node) => {
-      return node.children.map((child) => child.text).join('');
-    }).join('\n');
-
     const element = document.createElement("a");
-    const file = new Blob([plainText], { type: "text/plain" });
+    const file = new Blob([content], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
     element.download = `tender-${tender?.title || "export"}.txt`;
     document.body.appendChild(element);
@@ -186,20 +110,13 @@ const EditTender = () => {
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border bg-background">
-        <div className="p-4">
-          <PlateRoot
-            plugins={plugins}
-            editor={editor}
-            initialValue={content}
-            onChange={setContent}
-          >
-            <PlateEditor 
-              className="min-h-[500px] outline-none"
-              placeholder="Start writing your tender description..."
-            />
-          </PlateRoot>
-        </div>
+      <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border">
+        <Textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="min-h-[500px] resize-none border-0 p-4 focus-visible:ring-0"
+          placeholder="Start writing your tender description..."
+        />
       </ScrollArea>
     </div>
   );
