@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      meters: {
+        Row: {
+          created_at: string
+          id: string
+          last_reading: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          last_reading?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          status: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_reading?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
