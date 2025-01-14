@@ -33,6 +33,48 @@ const Index = () => {
       status: "closed" as const,
       budget: "$750,000",
     },
+    {
+      title: "Smart City Lighting Project",
+      organization: "City Council",
+      deadline: "2024-06-20",
+      status: "active" as const,
+      budget: "$1,200,000",
+    },
+    {
+      title: "School Renovation Program",
+      organization: "Education Board",
+      deadline: "2024-05-15",
+      status: "active" as const,
+      budget: "$3,500,000",
+    },
+    {
+      title: "Waste Management System",
+      organization: "Environmental Agency",
+      deadline: "2024-04-30",
+      status: "draft" as const,
+      budget: "$800,000",
+    },
+    {
+      title: "Emergency Response Vehicles",
+      organization: "Fire Department",
+      deadline: "2024-03-25",
+      status: "closed" as const,
+      budget: "$1,500,000",
+    },
+    {
+      title: "Parks Maintenance Services",
+      organization: "Parks & Recreation",
+      deadline: "2024-07-01",
+      status: "active" as const,
+      budget: "$300,000",
+    },
+    {
+      title: "Digital Archives System",
+      organization: "National Library",
+      deadline: "2024-06-15",
+      status: "draft" as const,
+      budget: "$450,000",
+    }
   ];
 
   return (
