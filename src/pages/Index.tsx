@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import TenderCard from "@/components/TenderCard";
 import TenderList from "@/components/TenderList";
 import StatsCard from "@/components/StatsCard";
-import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List } from "lucide-react";
+import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List, ArrowUpDown } from "lucide-react";
+import { sortTenders, SortConfig } from "@/utils/sortTenders";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -16,6 +17,10 @@ const Index = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [organizationFilter, setOrganizationFilter] = useState<string>("all");
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    field: "deadline",
+    order: "desc",
+  });
 
   const tenders = [
     {
@@ -136,8 +141,18 @@ const Index = () => {
     return matchesSearch && matchesStatus && matchesOrg;
   });
 
+  // Sort the filtered tenders
+  const sortedTenders = sortTenders(filteredTenders, sortConfig);
+
   // Calculate stats based on filtered tenders
-  const activeTenders = filteredTenders.filter(t => t.status === "active").length;
+  const activeTenders = sortedTenders.filter(t => t.status === "active").length;
+
+  const handleSort = (field: SortConfig["field"]) => {
+    setSortConfig(current => ({
+      field,
+      order: current.field === field && current.order === "asc" ? "desc" : "asc",
+    }));
+  };
 
   return (
     <div className="space-y-6">
@@ -149,7 +164,7 @@ const Index = () => {
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title={t('stats.totalTenders')}
-          value={filteredTenders.length.toString()}
+          value={sortedTenders.length.toString()}
           icon={<FileText className="h-4 w-4" />}
         />
         <StatsCard
@@ -222,14 +237,31 @@ const Index = () => {
         </div>
       </div>
 
+      <div className="flex gap-2 flex-wrap">
+        {["title", "organization", "deadline", "budget", "status"].map((field) => (
+          <Button
+            key={field}
+            variant="outline"
+            size="sm"
+            onClick={() => handleSort(field as SortConfig["field"])}
+            className={`flex items-center gap-1 ${
+              sortConfig.field === field ? "bg-muted" : ""
+            }`}
+          >
+            {t(field)}
+            <ArrowUpDown className="h-3 w-3" />
+          </Button>
+        ))}
+      </div>
+
       {viewMode === "grid" ? (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {filteredTenders.map((tender, index) => (
+          {sortedTenders.map((tender, index) => (
             <TenderCard key={index} {...tender} />
           ))}
         </div>
       ) : (
-        <TenderList tenders={filteredTenders} />
+        <TenderList tenders={sortedTenders} />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Building2, FileText } from "lucide-react";
+import { CalendarDays, Building2, FileText, ArrowUp, ArrowDown } from "lucide-react";
+import { SortConfig } from "@/utils/sortTenders";
 
 interface TenderListProps {
   tenders: {
@@ -10,13 +11,24 @@ interface TenderListProps {
     status: "draft" | "active" | "closed";
     budget: string;
   }[];
+  sortConfig?: SortConfig;
+  onSort?: (field: SortConfig["field"]) => void;
 }
 
-const TenderList = ({ tenders }: TenderListProps) => {
+const TenderList = ({ tenders, sortConfig, onSort }: TenderListProps) => {
   const statusColors = {
     draft: "bg-secondary",
     active: "bg-emerald-100 text-emerald-700",
     closed: "bg-destructive/10 text-destructive",
+  };
+
+  const SortIndicator = ({ field }: { field: SortConfig["field"] }) => {
+    if (!sortConfig || sortConfig.field !== field) return null;
+    return sortConfig.order === "asc" ? (
+      <ArrowUp className="h-3 w-3 ml-1" />
+    ) : (
+      <ArrowDown className="h-3 w-3 ml-1" />
+    );
   };
 
   return (
@@ -24,11 +36,36 @@ const TenderList = ({ tenders }: TenderListProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Organization</TableHead>
-            <TableHead>Deadline</TableHead>
-            <TableHead>Budget</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => onSort?.("title")}>
+              <div className="flex items-center">
+                Title
+                <SortIndicator field="title" />
+              </div>
+            </TableHead>
+            <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => onSort?.("organization")}>
+              <div className="flex items-center">
+                Organization
+                <SortIndicator field="organization" />
+              </div>
+            </TableHead>
+            <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => onSort?.("deadline")}>
+              <div className="flex items-center">
+                Deadline
+                <SortIndicator field="deadline" />
+              </div>
+            </TableHead>
+            <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => onSort?.("budget")}>
+              <div className="flex items-center">
+                Budget
+                <SortIndicator field="budget" />
+              </div>
+            </TableHead>
+            <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => onSort?.("status")}>
+              <div className="flex items-center">
+                Status
+                <SortIndicator field="status" />
+              </div>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
