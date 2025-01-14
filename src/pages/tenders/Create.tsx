@@ -165,12 +165,12 @@ const CreateTender = () => {
                     <FormControl>
                       <Textarea 
                         placeholder={t("Describe the tender requirements and specifications")}
-                        className="min-h-[40px] text-sm leading-relaxed hover:border-primary/50 transition-colors resize-none overflow-hidden"
+                        className="min-h-[200px] text-sm leading-relaxed hover:border-primary/50 transition-colors resize-none"
                         style={{ height: 'auto' }}
                         onInput={(e) => {
                           const target = e.target as HTMLTextAreaElement;
                           target.style.height = 'auto';
-                          target.style.height = `${target.scrollHeight}px`;
+                          target.style.height = `${target.scrollHeight + 8}px`;
                         }}
                         {...field} 
                       />
