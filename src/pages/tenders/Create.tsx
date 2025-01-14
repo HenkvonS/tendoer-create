@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { ArrowLeft, DollarSign, Calendar, Wand2, FileText, Clock, Coins } from "lucide-react"
 import { useTenderAI } from "@/hooks/use-tender-ai"
+import { useRef, useEffect } from "react"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -33,6 +34,7 @@ const CreateTender = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { generateDescription, isGenerating } = useTenderAI()
+  const descriptionRef = useRef<HTMLTextAreaElement>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,6 +45,24 @@ const CreateTender = () => {
       deadline: "",
     },
   })
+
+  const adjustTextareaHeight = () => {
+    const textarea = descriptionRef.current
+    if (textarea) {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${textarea.scrollHeight}px`
+    }
+  }
+
+  // Watch for description changes and adjust height
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'description') {
+        adjustTextareaHeight()
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [form.watch])
 
   const handleGenerateDescription = async () => {
     const title = form.getValues("title")
@@ -58,6 +78,8 @@ const CreateTender = () => {
     const description = await generateDescription(title)
     if (description) {
       form.setValue("description", description)
+      // Ensure the textarea height adjusts after AI generation
+      setTimeout(adjustTextareaHeight, 0)
       toast({
         title: "Success",
         description: "AI description generated successfully",
@@ -166,12 +188,8 @@ const CreateTender = () => {
                       <Textarea 
                         placeholder={t("Describe the tender requirements and specifications")}
                         className="min-h-[40px] text-sm leading-relaxed hover:border-primary/50 transition-colors resize-none overflow-hidden"
-                        style={{ height: 'auto' }}
-                        onInput={(e) => {
-                          const target = e.target as HTMLTextAreaElement;
-                          target.style.height = 'auto';
-                          target.style.height = `${target.scrollHeight}px`;
-                        }}
+                        ref={descriptionRef}
+                        onInput={adjustTextareaHeight}
                         {...field} 
                       />
                     </FormControl>
