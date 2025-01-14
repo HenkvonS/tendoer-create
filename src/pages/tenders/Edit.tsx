@@ -1,13 +1,31 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  createPlugins,
+  Plate,
+  PlateContent,
+  PlateProvider,
+} from '@udecode/plate-common';
+import {
+  createParagraphPlugin,
+  createBlockquotePlugin,
+  createCodeBlockPlugin,
+  createHeadingPlugin,
+} from '@udecode/plate-basic-elements';
+
+const plugins = createPlugins([
+  createParagraphPlugin(),
+  createBlockquotePlugin(),
+  createCodeBlockPlugin(),
+  createHeadingPlugin(),
+]);
 
 const EditTender = () => {
   const { id } = useParams();
@@ -41,7 +59,24 @@ const EditTender = () => {
         throw new Error("Tender not found");
       }
 
-      setContent(data.description || "");
+      try {
+        const parsedContent = data.description ? JSON.parse(data.description) : [
+          {
+            type: 'p',
+            children: [{ text: '' }],
+          },
+        ];
+        setContent(parsedContent);
+      } catch (e) {
+        // If the content is not JSON (legacy plain text), convert it to Plate format
+        setContent([
+          {
+            type: 'p',
+            children: [{ text: data.description || '' }],
+          },
+        ]);
+      }
+      
       return data;
     },
     retry: false,
@@ -53,7 +88,7 @@ const EditTender = () => {
     try {
       const { error } = await supabase
         .from("tenders")
-        .update({ description: content })
+        .update({ description: JSON.stringify(content) })
         .eq("id", id);
 
       if (error) throw error;
@@ -65,8 +100,13 @@ const EditTender = () => {
   };
 
   const handleExport = () => {
+    // Convert the rich text content to plain text for export
+    const plainText = content.map((node: any) => {
+      return node.children.map((child: any) => child.text).join('');
+    }).join('\n');
+
     const element = document.createElement("a");
-    const file = new Blob([content], { type: "text/plain" });
+    const file = new Blob([plainText], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
     element.download = `tender-${tender?.title || "export"}.txt`;
     document.body.appendChild(element);
@@ -110,13 +150,20 @@ const EditTender = () => {
         </div>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border">
-        <Textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="min-h-[500px] resize-none border-0 p-4 focus-visible:ring-0"
-          placeholder="Start writing your tender description..."
-        />
+      <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border bg-background">
+        <div className="p-4">
+          <PlateProvider plugins={plugins}>
+            <Plate
+              value={content}
+              onChange={setContent}
+            >
+              <PlateContent 
+                className="min-h-[500px] outline-none"
+                placeholder="Start writing your tender description..."
+              />
+            </Plate>
+          </PlateProvider>
+        </div>
       </ScrollArea>
     </div>
   );
