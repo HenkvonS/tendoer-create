@@ -107,27 +107,27 @@ const CreateTender = () => {
   }
 
   return (
-    <div className="container max-w-3xl py-8">
+    <div className="container max-w-3xl py-4 px-4 md:py-8 md:px-0">
       <Button
         variant="ghost"
-        className="mb-6"
+        className="mb-4 md:mb-6"
         onClick={() => navigate(-1)}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
 
-      <Card>
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-2xl">{t("Create New Tender")}</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl md:text-2xl">{t("Create New Tender")}</CardTitle>
+          <CardDescription className="text-sm md:text-base">
             Create a new tender for your organization. Fill in the details below or use AI to help generate content.
           </CardDescription>
         </CardHeader>
 
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
               <FormField
                 control={form.control}
                 name="title"
@@ -137,7 +137,7 @@ const CreateTender = () => {
                     <FormControl>
                       <Input placeholder="Enter tender title" {...field} />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-xs md:text-sm">
                       Give your tender a clear and descriptive title
                     </FormDescription>
                     <FormMessage />
@@ -158,19 +158,20 @@ const CreateTender = () => {
                         size="sm"
                         onClick={handleGenerateDescription}
                         disabled={isGenerating}
+                        className="text-xs md:text-sm"
                       >
-                        <Wand2 className="mr-2 h-4 w-4" />
+                        <Wand2 className="mr-2 h-3 w-3 md:h-4 md:w-4" />
                         {isGenerating ? "Generating..." : "Generate with AI"}
                       </Button>
                     </FormLabel>
                     <FormControl>
                       <Textarea 
                         placeholder="Describe the tender requirements and specifications"
-                        className="min-h-[120px]"
+                        className="min-h-[120px] md:min-h-[160px]"
                         {...field} 
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-xs md:text-sm">
                       Provide detailed information about the tender or use AI to generate a description
                     </FormDescription>
                     <FormMessage />
@@ -178,7 +179,7 @@ const CreateTender = () => {
                 )}
               />
 
-              <div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-4 md:gap-6 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="budget"
@@ -187,7 +188,7 @@ const CreateTender = () => {
                       <FormLabel>{t("Budget")}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                          <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input 
                             type="number" 
                             step="0.01" 
@@ -197,7 +198,7 @@ const CreateTender = () => {
                           />
                         </div>
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="text-xs md:text-sm">
                         Optional: Specify the tender budget
                       </FormDescription>
                       <FormMessage />
@@ -213,7 +214,7 @@ const CreateTender = () => {
                       <FormLabel>{t("Deadline")}</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <Calendar className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                          <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                           <Input 
                             type="datetime-local"
                             className="pl-10"
@@ -221,7 +222,7 @@ const CreateTender = () => {
                           />
                         </div>
                       </FormControl>
-                      <FormDescription>
+                      <FormDescription className="text-xs md:text-sm">
                         Optional: Set a submission deadline
                       </FormDescription>
                       <FormMessage />
