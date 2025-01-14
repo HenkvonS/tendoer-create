@@ -78,7 +78,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="space-y-6 max-w-[1200px] mx-auto px-4 sm:px-6">
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl font-bold md:text-2xl">{t('dashboard.title')}</h1>
         <p className="text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
