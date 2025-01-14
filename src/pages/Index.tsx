@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TenderCard from "@/components/TenderCard";
 import TenderList from "@/components/TenderList";
 import StatsCard from "@/components/StatsCard";
@@ -13,6 +14,8 @@ const Index = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [organizationFilter, setOrganizationFilter] = useState<string>("all");
 
   const tenders = [
     {
@@ -122,6 +125,20 @@ const Index = () => {
     }
   ];
 
+  // Get unique organizations for the filter
+  const organizations = Array.from(new Set(tenders.map(tender => tender.organization)));
+
+  // Filter tenders based on search query, status, and organization
+  const filteredTenders = tenders.filter(tender => {
+    const matchesSearch = tender.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "all" || tender.status === statusFilter;
+    const matchesOrg = organizationFilter === "all" || tender.organization === organizationFilter;
+    return matchesSearch && matchesStatus && matchesOrg;
+  });
+
+  // Calculate stats based on filtered tenders
+  const activeTenders = filteredTenders.filter(t => t.status === "active").length;
+
   return (
     <div className="space-y-6">
       <div>
@@ -132,12 +149,12 @@ const Index = () => {
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title={t('stats.totalTenders')}
-          value="15"
+          value={filteredTenders.length.toString()}
           icon={<FileText className="h-4 w-4" />}
         />
         <StatsCard
           title={t('stats.activeTenders')}
-          value="7"
+          value={activeTenders.toString()}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <StatsCard
@@ -153,14 +170,40 @@ const Index = () => {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1 group">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:scale-110" />
-          <Input
-            placeholder={t('actions.search')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 transition-all duration-200 hover:shadow-sm"
-          />
+        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:scale-110" />
+            <Input
+              placeholder={t('actions.search')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 transition-all duration-200 hover:shadow-sm"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={organizationFilter} onValueChange={setOrganizationFilter}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filter by organization" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Organizations</SelectItem>
+              {organizations.map((org) => (
+                <SelectItem key={org} value={org}>
+                  {org}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex items-center gap-4">
           <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "grid" | "list")}>
@@ -181,12 +224,12 @@ const Index = () => {
 
       {viewMode === "grid" ? (
         <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {tenders.map((tender, index) => (
+          {filteredTenders.map((tender, index) => (
             <TenderCard key={index} {...tender} />
           ))}
         </div>
       ) : (
-        <TenderList tenders={tenders} />
+        <TenderList tenders={filteredTenders} />
       )}
     </div>
   );
