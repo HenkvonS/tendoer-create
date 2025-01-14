@@ -7,14 +7,22 @@ import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { createPlugins } from '@udecode/plate-core';
-import { Plate, PlateContent } from '@udecode/plate-common';
 import {
-  createParagraphPlugin,
-  createBlockquotePlugin,
-  createCodeBlockPlugin,
-  createHeadingPlugin,
-} from '@udecode/plate-basic-elements';
+  createEditor,
+  createPlateUI,
+  Plate as PlateRoot,
+  PlateContent as PlateEditor,
+  createPlugins as createPlatePlugins,
+  withHistory,
+  withReact,
+} from '@udecode/plate';
+import {
+  ELEMENT_PARAGRAPH,
+  ELEMENT_H1,
+  ELEMENT_H2,
+  ELEMENT_BLOCKQUOTE,
+  ELEMENT_CODE_BLOCK,
+} from '@udecode/plate-headless';
 
 // Define the type for our editor's content
 type PlateContent = {
@@ -22,11 +30,32 @@ type PlateContent = {
   children: { text: string }[];
 }[];
 
-const plugins = createPlugins([
-  createParagraphPlugin(),
-  createBlockquotePlugin(),
-  createCodeBlockPlugin(),
-  createHeadingPlugin(),
+const plugins = createPlatePlugins([
+  {
+    key: ELEMENT_PARAGRAPH,
+    type: ELEMENT_PARAGRAPH,
+    component: createPlateUI().p,
+  },
+  {
+    key: ELEMENT_H1,
+    type: ELEMENT_H1,
+    component: createPlateUI().h1,
+  },
+  {
+    key: ELEMENT_H2,
+    type: ELEMENT_H2,
+    component: createPlateUI().h2,
+  },
+  {
+    key: ELEMENT_BLOCKQUOTE,
+    type: ELEMENT_BLOCKQUOTE,
+    component: createPlateUI().blockquote,
+  },
+  {
+    key: ELEMENT_CODE_BLOCK,
+    type: ELEMENT_CODE_BLOCK,
+    component: createPlateUI().code,
+  },
 ]);
 
 const EditTender = () => {
@@ -38,6 +67,8 @@ const EditTender = () => {
       children: [{ text: '' }],
     },
   ]);
+
+  const editor = withHistory(withReact(createEditor()));
 
   const { data: tender, isLoading } = useQuery({
     queryKey: ["tender", id],
@@ -75,7 +106,6 @@ const EditTender = () => {
         ];
         setContent(parsedContent);
       } catch (e) {
-        // If the content is not JSON (legacy plain text), convert it to Plate format
         setContent([
           {
             type: 'p',
@@ -107,7 +137,6 @@ const EditTender = () => {
   };
 
   const handleExport = () => {
-    // Convert the rich text content to plain text for export
     const plainText = content.map((node) => {
       return node.children.map((child) => child.text).join('');
     }).join('\n');
@@ -159,16 +188,17 @@ const EditTender = () => {
 
       <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border bg-background">
         <div className="p-4">
-          <Plate
+          <PlateRoot
             plugins={plugins}
+            editor={editor}
             initialValue={content}
             onChange={setContent}
           >
-            <PlateContent 
+            <PlateEditor 
               className="min-h-[500px] outline-none"
               placeholder="Start writing your tender description..."
             />
-          </Plate>
+          </PlateRoot>
         </div>
       </ScrollArea>
     </div>
