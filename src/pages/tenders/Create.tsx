@@ -18,9 +18,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { ArrowLeft, DollarSign, Calendar, Wand2, FileText, Clock, Coins, Bold, List, Quote } from "lucide-react"
+import { ArrowLeft, DollarSign, Calendar, Wand2, FileText, Clock, Coins } from "lucide-react"
 import { useTenderAI } from "@/hooks/use-tender-ai"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -64,34 +63,6 @@ const CreateTender = () => {
         description: "AI description generated successfully",
       })
     }
-  }
-
-  const insertMarkdown = (type: 'bold' | 'list' | 'quote') => {
-    const textarea = document.querySelector('textarea') as HTMLTextAreaElement
-    if (!textarea) return
-
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const text = form.getValues("description") || ""
-    let newText = text
-
-    switch (type) {
-      case 'bold':
-        newText = text.slice(0, start) + `**${text.slice(start, end) || 'bold text'}**` + text.slice(end)
-        break
-      case 'list':
-        newText = text.slice(0, start) + `\n- ${text.slice(start, end) || 'list item'}` + text.slice(end)
-        break
-      case 'quote':
-        newText = text.slice(0, start) + `\n> ${text.slice(start, end) || 'quoted text'}` + text.slice(end)
-        break
-    }
-
-    form.setValue("description", newText)
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + 2, end + 2)
-    }, 0)
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -179,35 +150,22 @@ const CreateTender = () => {
                   <FormItem className="space-y-2">
                     <div className="flex items-center justify-between">
                       <FormLabel className="text-sm font-medium">{t("Description")}</FormLabel>
-                      <div className="flex items-center gap-2">
-                        <ToggleGroup type="multiple" className="h-7">
-                          <ToggleGroupItem value="bold" size="sm" onClick={() => insertMarkdown('bold')}>
-                            <Bold className="h-3.5 w-3.5" />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="list" size="sm" onClick={() => insertMarkdown('list')}>
-                            <List className="h-3.5 w-3.5" />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem value="quote" size="sm" onClick={() => insertMarkdown('quote')}>
-                            <Quote className="h-3.5 w-3.5" />
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleGenerateDescription}
-                          disabled={isGenerating}
-                          className="h-7 px-2 text-xs hover:bg-primary/5"
-                          size="sm"
-                        >
-                          <Wand2 className="mr-1 h-3 w-3" />
-                          {isGenerating ? t("Generating...") : t("Generate with AI")}
-                        </Button>
-                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleGenerateDescription}
+                        disabled={isGenerating}
+                        className="h-7 px-2 text-xs hover:bg-primary/5"
+                        size="sm"
+                      >
+                        <Wand2 className="mr-1 h-3 w-3" />
+                        {isGenerating ? t("Generating...") : t("Generate with AI")}
+                      </Button>
                     </div>
                     <FormControl>
                       <Textarea 
-                        placeholder={t("Describe the tender requirements and specifications. Use markdown for formatting.")}
-                        className="min-h-[40px] text-sm leading-relaxed hover:border-primary/50 transition-colors resize-none overflow-hidden font-mono"
+                        placeholder={t("Describe the tender requirements and specifications")}
+                        className="min-h-[40px] text-sm leading-relaxed hover:border-primary/50 transition-colors resize-none overflow-hidden"
                         style={{ height: 'auto' }}
                         onInput={(e) => {
                           const target = e.target as HTMLTextAreaElement;
@@ -218,7 +176,7 @@ const CreateTender = () => {
                       />
                     </FormControl>
                     <FormDescription className="text-xs">
-                      {t("Use markdown syntax for formatting: **bold**, - for lists, > for quotes")}
+                      {t("Provide detailed information about the tender or use AI to generate a description")}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
