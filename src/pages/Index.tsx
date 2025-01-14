@@ -78,13 +78,13 @@ const Index = () => {
   ];
 
   return (
-    <div className="space-y-8 max-w-[1200px] mx-auto">
+    <div className="space-y-6 max-w-[1200px] mx-auto px-4 sm:px-6">
       <div>
-        <h1 className="text-xl font-bold">{t('dashboard.title')}</h1>
+        <h1 className="text-xl font-bold md:text-2xl">{t('dashboard.title')}</h1>
         <p className="text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title={t('stats.totalTenders')}
           value="12"
@@ -107,7 +107,7 @@ const Index = () => {
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <div className="relative flex-1 group">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:scale-110" />
           <Input
@@ -117,14 +117,14 @@ const Index = () => {
             className="pl-9 transition-all duration-200 hover:shadow-sm"
           />
         </div>
-        <Link to="/tenders/create">
-          <Button className="bg-primary hover:translate-y-0.5 transition-all duration-200 hover:shadow-md">
+        <Link to="/tenders/create" className="w-full sm:w-auto">
+          <Button className="w-full sm:w-auto bg-primary hover:translate-y-0.5 transition-all duration-200 hover:shadow-md">
             {t('actions.createTender')}
           </Button>
         </Link>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {tenders.map((tender, index) => (
           <TenderCard key={index} {...tender} />
         ))}

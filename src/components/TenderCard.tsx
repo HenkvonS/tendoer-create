@@ -19,17 +19,17 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
 
   return (
     <Card className="group transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
-      <CardHeader className="p-4">
-        <div className="flex justify-between items-start gap-4">
-          <CardTitle className="text-base font-medium transition-colors duration-200 group-hover:text-primary">
+      <CardHeader className="p-3 sm:p-4">
+        <div className="flex justify-between items-start gap-2 sm:gap-4">
+          <CardTitle className="text-sm sm:text-base font-medium transition-colors duration-200 group-hover:text-primary line-clamp-2">
             {title}
           </CardTitle>
-          <Badge variant="secondary" className={statusColors[status]}>
+          <Badge variant="secondary" className={`${statusColors[status]} shrink-0`}>
             {status}
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-4 pt-0 space-y-2.5">
+      <CardContent className="p-3 sm:p-4 pt-0 space-y-2">
         <InfoRow icon={Building2} text={organization} />
         <InfoRow icon={CalendarDays} text={`Deadline: ${deadline}`} />
         <InfoRow icon={FileText} text={`Budget: ${budget}`} />
@@ -40,8 +40,8 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
 
 const InfoRow = ({ icon: Icon, text }: { icon: any; text: string }) => (
   <div className="flex items-center text-sm text-muted-foreground">
-    <Icon className="h-3.5 w-3.5 mr-2 transition-transform duration-200 group-hover:scale-110" />
-    <span>{text}</span>
+    <Icon className="h-3.5 w-3.5 mr-2 transition-transform duration-200 group-hover:scale-110 shrink-0" />
+    <span className="line-clamp-1">{text}</span>
   </div>
 );
 

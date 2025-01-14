@@ -30,15 +30,15 @@ const App = () => (
                   <AppSidebar />
                   <main className="flex-1">
                     <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                      <div className="container flex h-14 items-center justify-between">
+                      <div className="flex h-14 items-center justify-between px-4 sm:px-6">
                         <SidebarTrigger />
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                           <ThemeToggle />
                           <LanguageSelector />
                         </div>
                       </div>
                     </header>
-                    <div className="container p-6">
+                    <div className="p-4 sm:p-6">
                       <Routes>
                         <Route path="/" element={<Index />} />
                         <Route path="/tenders/create" element={<CreateTender />} />
