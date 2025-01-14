@@ -17,26 +17,39 @@ const EditTender = () => {
   const { data: tender, isLoading } = useQuery({
     queryKey: ["tender", id],
     queryFn: async () => {
+      if (!id) {
+        toast.error("Invalid tender ID");
+        navigate("/");
+        throw new Error("Invalid tender ID");
+      }
+
       const { data, error } = await supabase
         .from("tenders")
-        .select("*")
+        .select()
         .eq("id", id)
         .maybeSingle();
 
       if (error) {
         toast.error("Failed to load tender");
+        console.error("Load error:", error);
         throw error;
       }
 
-      if (data) {
-        setContent(data.description || "");
+      if (!data) {
+        toast.error("Tender not found");
+        navigate("/");
+        throw new Error("Tender not found");
       }
 
+      setContent(data.description || "");
       return data;
     },
+    retry: false,
   });
 
   const handleSave = async () => {
+    if (!id) return;
+
     try {
       const { error } = await supabase
         .from("tenders")
