@@ -8,29 +8,41 @@ import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  createPlugins,
+  createPlateUI,
   Plate,
+  createPlugins,
   PlateContent,
-  PlateProvider,
-} from '@udecode/plate-common';
-import {
   createParagraphPlugin,
   createBlockquotePlugin,
   createCodeBlockPlugin,
   createHeadingPlugin,
-} from '@udecode/plate-basic-elements';
+  PlateEditor,
+} from '@udecode/plate';
+
+// Define the type for our editor's content
+type PlateContent = {
+  type: string;
+  children: { text: string }[];
+}[];
 
 const plugins = createPlugins([
   createParagraphPlugin(),
   createBlockquotePlugin(),
   createCodeBlockPlugin(),
   createHeadingPlugin(),
-]);
+], {
+  components: createPlateUI(),
+});
 
 const EditTender = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState<PlateContent>([
+    {
+      type: 'p',
+      children: [{ text: '' }],
+    },
+  ]);
 
   const { data: tender, isLoading } = useQuery({
     queryKey: ["tender", id],
@@ -101,8 +113,8 @@ const EditTender = () => {
 
   const handleExport = () => {
     // Convert the rich text content to plain text for export
-    const plainText = content.map((node: any) => {
-      return node.children.map((child: any) => child.text).join('');
+    const plainText = content.map((node) => {
+      return node.children.map((child) => child.text).join('');
     }).join('\n');
 
     const element = document.createElement("a");
@@ -152,17 +164,16 @@ const EditTender = () => {
 
       <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border bg-background">
         <div className="p-4">
-          <PlateProvider plugins={plugins}>
-            <Plate
-              value={content}
-              onChange={setContent}
-            >
-              <PlateContent 
-                className="min-h-[500px] outline-none"
-                placeholder="Start writing your tender description..."
-              />
-            </Plate>
-          </PlateProvider>
+          <Plate
+            plugins={plugins}
+            initialValue={content}
+            onChange={setContent}
+          >
+            <PlateContent 
+              className="min-h-[500px] outline-none"
+              placeholder="Start writing your tender description..."
+            />
+          </Plate>
         </div>
       </ScrollArea>
     </div>
