@@ -11,8 +11,12 @@ export const useTenderAI = () => {
     try {
       const prompt = `Generate a professional tender description for: "${title}". Include key requirements, specifications, and evaluation criteria. Keep it concise but comprehensive.`;
       
+      // Fixed the function invocation
       const { data, error } = await supabase.functions.invoke('generate-tender', {
         body: { prompt },
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       if (error) {
