@@ -3,13 +3,16 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import TenderCard from "@/components/TenderCard";
+import TenderList from "@/components/TenderList";
 import StatsCard from "@/components/StatsCard";
-import { Search, FileText, Users, TrendingUp, AlertCircle } from "lucide-react";
+import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List } from "lucide-react";
 
 const Index = () => {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const tenders = [
     {
@@ -149,7 +152,7 @@ const Index = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 group">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:scale-110" />
           <Input
@@ -159,18 +162,32 @@ const Index = () => {
             className="pl-9 transition-all duration-200 hover:shadow-sm"
           />
         </div>
-        <Link to="/tenders/create" className="w-full sm:w-auto">
-          <Button className="w-full sm:w-auto bg-primary hover:translate-y-0.5 transition-all duration-200 hover:shadow-md">
-            {t('actions.createTender')}
-          </Button>
-        </Link>
+        <div className="flex items-center gap-4">
+          <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "grid" | "list")}>
+            <ToggleGroupItem value="grid" aria-label="Grid view">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="list" aria-label="List view">
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Link to="/tenders/create">
+            <Button className="bg-primary hover:translate-y-0.5 transition-all duration-200 hover:shadow-md">
+              {t('actions.createTender')}
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-        {tenders.map((tender, index) => (
-          <TenderCard key={index} {...tender} />
-        ))}
-      </div>
+      {viewMode === "grid" ? (
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+          {tenders.map((tender, index) => (
+            <TenderCard key={index} {...tender} />
+          ))}
+        </div>
+      ) : (
+        <TenderList tenders={tenders} />
+      )}
     </div>
   );
 };
