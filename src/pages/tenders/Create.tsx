@@ -18,9 +18,8 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { ArrowLeft, DollarSign, Calendar, Wand2, Building2 } from "lucide-react"
+import { ArrowLeft, DollarSign, Calendar, Wand2 } from "lucide-react"
 import { useTenderAI } from "@/hooks/use-tender-ai"
-import { useQuery } from "@tanstack/react-query"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -34,24 +33,6 @@ const CreateTender = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { generateDescription, isGenerating } = useTenderAI()
-
-  // Fetch organization profile
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No user found')
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('organization_name')
-        .eq('id', user.id)
-        .single()
-      
-      if (error) throw error
-      return data
-    }
-  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -138,22 +119,10 @@ const CreateTender = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl">{t("Create New Tender")}</CardTitle>
-              <CardDescription>
-                Create a new tender for your organization. Fill in the details below or use AI to help generate content.
-              </CardDescription>
-            </div>
-            <div className="text-right">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Building2 className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  {profile?.organization_name || "Organization name not set"}
-                </span>
-              </div>
-            </div>
-          </div>
+          <CardTitle className="text-2xl">{t("Create New Tender")}</CardTitle>
+          <CardDescription>
+            Create a new tender for your organization. Fill in the details below or use AI to help generate content.
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
