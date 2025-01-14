@@ -109,16 +109,7 @@ const CreateTender = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-4xl px-4 py-8 mx-auto">
-        <Button
-          variant="ghost"
-          className="mb-8 text-muted-foreground hover:text-foreground"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t("Back")}
-        </Button>
-
-        <Card className="w-full border-2">
+        <Card className="w-full shadow-none border-0">
           <CardHeader className="space-y-4 pb-8">
             <div className="flex items-center space-x-2">
               <FileText className="h-6 w-6 text-primary" />
@@ -141,7 +132,7 @@ const CreateTender = () => {
                       <FormControl>
                         <Input 
                           placeholder={t("Enter tender title")}
-                          className="text-lg py-6 border-2 hover:border-primary/50 transition-colors"
+                          className="text-lg py-6 hover:border-primary/50 transition-colors"
                           {...field} 
                         />
                       </FormControl>
@@ -165,7 +156,7 @@ const CreateTender = () => {
                           variant="outline"
                           onClick={handleGenerateDescription}
                           disabled={isGenerating}
-                          className="border-2 hover:border-primary/50 transition-colors"
+                          className="hover:border-primary/50 transition-colors"
                         >
                           <Wand2 className="mr-2 h-4 w-4" />
                           {isGenerating ? t("Generating...") : t("Generate with AI")}
@@ -174,7 +165,7 @@ const CreateTender = () => {
                       <FormControl>
                         <Textarea 
                           placeholder={t("Describe the tender requirements and specifications")}
-                          className="min-h-[200px] text-lg leading-relaxed border-2 hover:border-primary/50 transition-colors resize-y"
+                          className="min-h-[200px] text-lg leading-relaxed hover:border-primary/50 transition-colors resize-y"
                           {...field} 
                         />
                       </FormControl>
@@ -203,7 +194,7 @@ const CreateTender = () => {
                               type="number" 
                               step="0.01" 
                               placeholder={t("Enter budget amount")}
-                              className="pl-10 text-lg py-6 border-2 hover:border-primary/50 transition-colors"
+                              className="pl-10 text-lg py-6 hover:border-primary/50 transition-colors"
                               {...field} 
                             />
                           </div>
@@ -230,7 +221,7 @@ const CreateTender = () => {
                             <Calendar className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
                             <Input 
                               type="datetime-local"
-                              className="pl-10 text-lg py-6 border-2 hover:border-primary/50 transition-colors"
+                              className="pl-10 text-lg py-6 hover:border-primary/50 transition-colors"
                               {...field}
                             />
                           </div>
@@ -244,7 +235,7 @@ const CreateTender = () => {
                   />
                 </div>
 
-                <CardFooter className="px-0 pb-0 pt-6">
+                <div className="flex flex-col space-y-4 pt-6">
                   <Button 
                     type="submit" 
                     size="lg" 
@@ -252,14 +243,23 @@ const CreateTender = () => {
                   >
                     {t("Create Tender")}
                   </Button>
-                </CardFooter>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-muted-foreground hover:text-foreground"
+                    onClick={() => navigate(-1)}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    {t("Back")}
+                  </Button>
+                </div>
               </form>
             </Form>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CreateTender
+export default CreateTender;
