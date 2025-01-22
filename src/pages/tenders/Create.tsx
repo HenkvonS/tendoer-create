@@ -16,14 +16,11 @@ import {
   FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { ArrowLeft, DollarSign, Calendar, Wand2, FileText, Clock, Coins } from "lucide-react"
-import { useTenderAI } from "@/hooks/use-tender-ai"
+import { ArrowLeft, Calendar, FileText, Clock, Coins } from "lucide-react"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
   budget: z.string().optional(),
   deadline: z.string().optional(),
 })
@@ -32,38 +29,15 @@ const CreateTender = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { generateDescription, isGenerating } = useTenderAI()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      description: "",
       budget: "",
       deadline: "",
     },
   })
-
-  const handleGenerateDescription = async () => {
-    const title = form.getValues("title")
-    if (!title) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please enter a title first",
-      })
-      return
-    }
-
-    const description = await generateDescription(title)
-    if (description) {
-      form.setValue("description", description)
-      toast({
-        title: "Success",
-        description: "AI description generated successfully",
-      })
-    }
-  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -82,7 +56,6 @@ const CreateTender = () => {
 
       const { error } = await supabase.from("tenders").insert({
         title: values.title,
-        description: values.description || null,
         budget: values.budget ? parseFloat(values.budget) : null,
         deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
         organization_id: user.id,
@@ -115,7 +88,7 @@ const CreateTender = () => {
             <CardTitle className="text-xl font-semibold">{t("Create New Tender")}</CardTitle>
           </div>
           <CardDescription className="text-sm">
-            {t("Create a new tender for your organization. Fill in the details below or use AI to help generate content.")}
+            {t("Create a new tender for your organization.")}
           </CardDescription>
         </CardHeader>
 
@@ -143,46 +116,6 @@ const CreateTender = () => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <FormLabel className="text-sm font-medium">{t("Description")}</FormLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleGenerateDescription}
-                        disabled={isGenerating}
-                        className="h-7 px-2 text-xs hover:bg-primary/5"
-                        size="sm"
-                      >
-                        <Wand2 className="mr-1 h-3 w-3" />
-                        {isGenerating ? t("Generating...") : t("Generate with AI")}
-                      </Button>
-                    </div>
-                    <FormControl>
-                      <Textarea 
-                        placeholder={t("Describe the tender requirements and specifications")}
-                        className="min-h-[200px] text-sm leading-relaxed hover:border-primary/50 transition-colors resize-none"
-                        style={{ height: 'auto' }}
-                        onInput={(e) => {
-                          const target = e.target as HTMLTextAreaElement;
-                          target.style.height = 'auto';
-                          target.style.height = `${target.scrollHeight + 8}px`;
-                        }}
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription className="text-xs">
-                      {t("Provide detailed information about the tender or use AI to generate a description")}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
@@ -194,16 +127,13 @@ const CreateTender = () => {
                         <FormLabel className="text-sm font-medium">{t("Budget")}</FormLabel>
                       </div>
                       <FormControl>
-                        <div className="relative">
-                          <DollarSign className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-                          <Input 
-                            type="number" 
-                            step="0.01" 
-                            placeholder={t("Enter budget amount")}
-                            className="h-9 pl-8 text-sm hover:border-primary/50 transition-colors"
-                            {...field} 
-                          />
-                        </div>
+                        <Input 
+                          type="number" 
+                          step="0.01" 
+                          placeholder={t("Enter budget amount")}
+                          className="h-9 text-sm hover:border-primary/50 transition-colors"
+                          {...field} 
+                        />
                       </FormControl>
                       <FormDescription className="text-xs">
                         {t("Optional: Specify the tender budget")}
