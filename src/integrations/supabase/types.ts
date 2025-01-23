@@ -194,7 +194,7 @@ export type Database = {
           is_public: boolean | null
           issue_date: string | null
           objective: string | null
-          organization_id: string
+          organization_id: string | null
           questions_deadline: string | null
           reference_number: string | null
           required_documents: string[] | null
@@ -226,7 +226,7 @@ export type Database = {
           is_public?: boolean | null
           issue_date?: string | null
           objective?: string | null
-          organization_id: string
+          organization_id?: string | null
           questions_deadline?: string | null
           reference_number?: string | null
           required_documents?: string[] | null
@@ -258,7 +258,7 @@ export type Database = {
           is_public?: boolean | null
           issue_date?: string | null
           objective?: string | null
-          organization_id?: string
+          organization_id?: string | null
           questions_deadline?: string | null
           reference_number?: string | null
           required_documents?: string[] | null

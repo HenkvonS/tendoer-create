@@ -20,9 +20,15 @@ export default function Settings() {
   const handleSave = async () => {
     try {
       setIsSaving(true)
+      // Generate a UUID for the profile
+      const profileId = crypto.randomUUID()
+      
       const { data, error } = await supabase
         .from("profiles")
-        .insert({ organization_name: organizationName })
+        .insert({ 
+          id: profileId,
+          organization_name: organizationName 
+        })
         .select()
         .single()
 
