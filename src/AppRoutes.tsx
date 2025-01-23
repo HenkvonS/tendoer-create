@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster as Sonner } from "@/components/ui/sonner"
+import { Sonner } from "@/components/ui/sonner"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar"
 import { ThemeToggle } from "@/components/ThemeToggle"
@@ -27,9 +27,9 @@ const AppRoutes = () => {
                 <AppSidebar />
                 <main className="flex-1">
                   <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                    <div className="flex h-14 items-center justify-between px-4">
+                    <div className="flex h-10 items-center justify-between px-3">
                       <SidebarTrigger />
-                      <div className="flex items-center gap-2 sm:gap-4">
+                      <div className="flex items-center gap-2">
                         <ThemeToggle />
                         <LanguageSelector />
                       </div>
