@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { Sonner } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/AppSidebar"
 import { ThemeToggle } from "@/components/ThemeToggle"
@@ -16,7 +16,7 @@ import "./i18n/config"
 const AppRoutes = () => {
   return (
     <TooltipProvider>
-      <Sonner />
+      <Toaster />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
