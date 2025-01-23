@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -16,27 +16,53 @@ export default function Settings() {
   const { toast } = useToast()
   const [organizationName, setOrganizationName] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Get the current user's ID
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+        // Fetch existing profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('organization_name')
+          .eq('id', user.id)
+          .single()
+        
+        if (profile?.organization_name) {
+          setOrganizationName(profile.organization_name)
+        }
+      }
+    }
+
+    getCurrentUser()
+  }, [])
 
   const handleSave = async () => {
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "You must be logged in to save settings.",
+      })
+      return
+    }
+
     try {
       setIsSaving(true)
-      // Generate a UUID for the profile
-      const profileId = crypto.randomUUID()
       
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("profiles")
-        .insert({ 
-          id: profileId,
-          organization_name: organizationName 
-        })
-        .select()
-        .single()
+        .update({ organization_name: organizationName })
+        .eq('id', userId)
 
       if (error) throw error
 
       toast({
         title: "Success",
-        description: "Settings updated successfully.",
+        description: "Organization settings updated successfully.",
       })
     } catch (error) {
       console.error("Error saving settings:", error)
