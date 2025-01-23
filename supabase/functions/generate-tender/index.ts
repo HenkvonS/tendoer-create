@@ -13,28 +13,29 @@ serve(async (req) => {
   }
 
   try {
-    // Validate request body exists
-    const body = await req.text()
-    if (!body) {
-      throw new Error('Request body is empty')
+    // Get the request body as text
+    const bodyText = await req.text();
+    console.log('Received request body:', bodyText);
+
+    if (!bodyText) {
+      throw new Error('Request body is empty');
     }
 
-    // Parse JSON safely
-    let requestData
+    // Parse the JSON body
+    let requestData;
     try {
-      requestData = JSON.parse(body)
+      requestData = JSON.parse(bodyText);
     } catch (e) {
-      console.error('JSON parse error:', e)
-      throw new Error('Invalid JSON in request body')
+      console.error('Failed to parse JSON:', e);
+      throw new Error('Invalid JSON in request body');
     }
 
-    const { prompt } = requestData
-    
+    const { prompt } = requestData;
     if (!prompt) {
-      throw new Error('No prompt provided')
+      throw new Error('No prompt provided');
     }
 
-    console.log('Processing prompt:', prompt)
+    console.log('Processing prompt:', prompt);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -53,23 +54,22 @@ serve(async (req) => {
         ],
         temperature: 0.7,
       }),
-    })
+    });
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('OpenAI API error:', errorText)
-      throw new Error(`OpenAI API error: ${errorText}`)
+      const errorText = await response.text();
+      console.error('OpenAI API error:', errorText);
+      throw new Error(`OpenAI API error: ${errorText}`);
     }
 
-    const data = await response.json()
+    const data = await response.json();
     
     if (!data.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from OpenAI API')
+      throw new Error('Invalid response from OpenAI API');
     }
 
-    const generatedText = data.choices[0].message.content
-
-    console.log('Successfully generated text')
+    const generatedText = data.choices[0].message.content;
+    console.log('Successfully generated text');
 
     return new Response(
       JSON.stringify({ generatedText }), 
@@ -79,9 +79,9 @@ serve(async (req) => {
           'Content-Type': 'application/json' 
         } 
       }
-    )
+    );
   } catch (error) {
-    console.error('Error in generate-tender function:', error)
+    console.error('Error in generate-tender function:', error);
     return new Response(
       JSON.stringify({ 
         error: error.message || 'An unexpected error occurred',
@@ -91,6 +91,6 @@ serve(async (req) => {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
-    )
+    );
   }
-})
+});

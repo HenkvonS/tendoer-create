@@ -26,9 +26,11 @@ export const useTenderAI = () => {
         default:
           prompt = `Generate professional content for the ${field} section of a tender about: "${context}".`;
       }
+
+      console.log('Sending prompt to generate-tender:', prompt);
       
       const { data, error } = await supabase.functions.invoke('generate-tender', {
-        body: { prompt },
+        body: JSON.stringify({ prompt }), // Explicitly stringify the body
         headers: {
           'Content-Type': 'application/json'
         }
