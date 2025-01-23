@@ -104,21 +104,21 @@ export type Database = {
           created_at: string
           id: string
           is_validated: boolean | null
-          organization_name: string | null
+          organization_name: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          id: string
+          id?: string
           is_validated?: boolean | null
-          organization_name?: string | null
+          organization_name: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           is_validated?: boolean | null
-          organization_name?: string | null
+          organization_name?: string
           updated_at?: string
         }
         Relationships: []

@@ -9,7 +9,8 @@ import {
   LayoutGrid,
   Menu,
   Settings2,
-  UserRound
+  UserRound,
+  Building2
 } from "lucide-react"
 import {
   Sidebar,
@@ -28,11 +29,38 @@ import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { useTranslation } from "react-i18next"
+import { useEffect, useState } from "react"
 
 export function AppSidebar() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { t } = useTranslation()
+  const [organization, setOrganization] = useState("")
+  const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          setUser(user)
+          const { data: profiles, error } = await supabase
+            .from('profiles')
+            .select('organization_name')
+            .single()
+
+          if (error) throw error
+          if (profiles) {
+            setOrganization(profiles.organization_name)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error)
+      }
+    }
+
+    getProfile()
+  }, [])
 
   const quickActions = [
     {
@@ -105,8 +133,11 @@ export function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">John Doe</span>
-            <span className="text-xs text-muted-foreground">Administrator</span>
+            <span className="text-sm font-medium">{user?.email || 'Loading...'}</span>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Building2 className="h-3 w-3" />
+              <span>{organization || 'Loading...'}</span>
+            </div>
           </div>
         </div>
       </SidebarHeader>
