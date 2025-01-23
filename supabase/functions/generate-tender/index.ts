@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    // Get the request body as text
+    // Get the request body
     const bodyText = await req.text();
     console.log('Received request body:', bodyText);
 
@@ -48,7 +48,7 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are a helpful assistant that generates professional tender documentation content. Your responses should be clear, concise, and follow standard tender documentation practices.' 
+            content: 'You are a professional tender documentation writer. Your responses should be clear, concise, and follow standard tender documentation practices.' 
           },
           { role: 'user', content: prompt }
         ],
@@ -64,13 +64,13 @@ serve(async (req) => {
 
     const data = await response.json();
     console.log('OpenAI API response:', data);
-    
+
     if (!data.choices?.[0]?.message?.content) {
       throw new Error('Invalid response from OpenAI API');
     }
 
-    const generatedText = data.choices[0].message.content;
-    console.log('Successfully generated text');
+    const generatedText = data.choices[0].message.content.trim();
+    console.log('Successfully generated text:', generatedText);
 
     return new Response(
       JSON.stringify({ generatedText }), 
