@@ -61,7 +61,70 @@ export default {
       fontFamily: {
         sans: ["Public Sans", "sans-serif"],
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: '100%',
+            color: 'inherit',
+            a: {
+              color: 'inherit',
+              textDecoration: 'underline',
+              '&:hover': {
+                color: 'inherit',
+              },
+            },
+            '[class~="lead"]': {
+              color: 'inherit',
+            },
+            strong: {
+              color: 'inherit',
+            },
+            'ul > li::before': {
+              backgroundColor: 'currentColor',
+            },
+            hr: {
+              borderColor: 'currentColor',
+            },
+            blockquote: {
+              color: 'inherit',
+              borderLeftColor: 'currentColor',
+            },
+            h1: {
+              color: 'inherit',
+            },
+            h2: {
+              color: 'inherit',
+            },
+            h3: {
+              color: 'inherit',
+            },
+            h4: {
+              color: 'inherit',
+            },
+            'figure figcaption': {
+              color: 'inherit',
+            },
+            code: {
+              color: 'inherit',
+            },
+            'a code': {
+              color: 'inherit',
+            },
+            pre: {
+              color: 'inherit',
+              backgroundColor: 'hsl(var(--muted))',
+            },
+            thead: {
+              color: 'inherit',
+              borderBottomColor: 'currentColor',
+            },
+            'tbody tr': {
+              borderBottomColor: 'currentColor',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;

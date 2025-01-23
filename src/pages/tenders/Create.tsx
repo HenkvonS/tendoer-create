@@ -17,10 +17,11 @@ import {
   FormDescription,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { MarkdownEditor } from "@/components/ui/markdown-editor"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { ArrowLeft, FileText, Wand2 } from "lucide-react"
+import { useState } from "react"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -52,6 +53,12 @@ const CreateTender = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { generateContent, isGenerating } = useTenderAI()
+  const [previewStates, setPreviewStates] = useState({
+    description: false,
+    objective: false,
+    scope_of_work: false,
+    eligibility_criteria: false,
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -161,6 +168,13 @@ const CreateTender = () => {
     }
   };
 
+  const togglePreview = (field: keyof typeof previewStates) => {
+    setPreviewStates(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }))
+  }
+
   const AIButton = ({ field }: { field: string }) => (
     <Button
       type="button"
@@ -217,9 +231,10 @@ const CreateTender = () => {
                         <AIButton field="description" />
                       </FormLabel>
                       <FormControl>
-                        <Textarea 
+                        <MarkdownEditor 
                           placeholder="Enter tender description"
-                          className="min-h-[100px]"
+                          preview={previewStates.description}
+                          onPreviewChange={() => togglePreview('description')}
                           {...field}
                         />
                       </FormControl>
@@ -276,9 +291,10 @@ const CreateTender = () => {
                         <AIButton field="objective" />
                       </FormLabel>
                       <FormControl>
-                        <Textarea 
+                        <MarkdownEditor 
                           placeholder="Enter tender objective"
-                          className="min-h-[100px]"
+                          preview={previewStates.objective}
+                          onPreviewChange={() => togglePreview('objective')}
                           {...field}
                         />
                       </FormControl>
@@ -294,12 +310,13 @@ const CreateTender = () => {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         Scope of Work
-                        <AIButton field="scope" />
+                        <AIButton field="scope_of_work" />
                       </FormLabel>
                       <FormControl>
-                        <Textarea 
+                        <MarkdownEditor 
                           placeholder="Enter scope of work"
-                          className="min-h-[100px]"
+                          preview={previewStates.scope_of_work}
+                          onPreviewChange={() => togglePreview('scope_of_work')}
                           {...field}
                         />
                       </FormControl>
@@ -315,12 +332,13 @@ const CreateTender = () => {
                     <FormItem>
                       <FormLabel className="flex items-center justify-between">
                         Eligibility Criteria
-                        <AIButton field="criteria" />
+                        <AIButton field="eligibility_criteria" />
                       </FormLabel>
                       <FormControl>
-                        <Textarea 
+                        <MarkdownEditor 
                           placeholder="Enter eligibility criteria"
-                          className="min-h-[100px]"
+                          preview={previewStates.eligibility_criteria}
+                          onPreviewChange={() => togglePreview('eligibility_criteria')}
                           {...field}
                         />
                       </FormControl>
