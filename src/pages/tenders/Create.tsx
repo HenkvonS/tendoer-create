@@ -90,25 +90,12 @@ const CreateTender = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to create a tender",
-          variant: "destructive",
-        })
-        return
-      }
-
       const { error } = await supabase.from("tenders").insert({
         title: values.title,
         description: values.description,
         budget: values.budget ? parseFloat(values.budget) : null,
         deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
-        organization_id: user.id,
+        organization_id: '00000000-0000-0000-0000-000000000000', // Default organization ID for guest users
         reference_number: values.reference_number,
         contact_person: values.contact_person,
         contact_email: values.contact_email,

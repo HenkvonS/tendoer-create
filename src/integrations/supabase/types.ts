@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_prompts: {
+        Row: {
+          created_at: string
+          field_name: string
+          id: string
+          prompt_text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          field_name: string
+          id?: string
+          prompt_text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          field_name?: string
+          id?: string
+          prompt_text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dashboard_layouts: {
         Row: {
           created_at: string
@@ -259,6 +283,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"] | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"] | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"] | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -267,7 +312,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
