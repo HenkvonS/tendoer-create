@@ -154,35 +154,98 @@ export type Database = {
       }
       tenders: {
         Row: {
+          approval_authority: string | null
           budget: number | null
+          category: string | null
+          contact_email: string | null
+          contact_person: string | null
+          contact_phone: string | null
+          contract_duration: string | null
           created_at: string
           deadline: string | null
           description: string | null
+          eligibility_criteria: string | null
+          evaluation_criteria: string[] | null
           id: string
+          is_public: boolean | null
+          issue_date: string | null
+          objective: string | null
           organization_id: string
+          questions_deadline: string | null
+          reference_number: string | null
+          required_documents: string[] | null
+          scope_of_work: string | null
+          site_visit_date: string | null
+          site_visit_location: string | null
+          site_visit_required: boolean | null
           status: string
+          submission_format: string | null
+          tender_opening_date: string | null
+          tender_opening_type: string | null
           title: string
           updated_at: string
         }
         Insert: {
+          approval_authority?: string | null
           budget?: number | null
+          category?: string | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          contract_duration?: string | null
           created_at?: string
           deadline?: string | null
           description?: string | null
+          eligibility_criteria?: string | null
+          evaluation_criteria?: string[] | null
           id?: string
+          is_public?: boolean | null
+          issue_date?: string | null
+          objective?: string | null
           organization_id: string
+          questions_deadline?: string | null
+          reference_number?: string | null
+          required_documents?: string[] | null
+          scope_of_work?: string | null
+          site_visit_date?: string | null
+          site_visit_location?: string | null
+          site_visit_required?: boolean | null
           status?: string
+          submission_format?: string | null
+          tender_opening_date?: string | null
+          tender_opening_type?: string | null
           title: string
           updated_at?: string
         }
         Update: {
+          approval_authority?: string | null
           budget?: number | null
+          category?: string | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          contract_duration?: string | null
           created_at?: string
           deadline?: string | null
           description?: string | null
+          eligibility_criteria?: string | null
+          evaluation_criteria?: string[] | null
           id?: string
+          is_public?: boolean | null
+          issue_date?: string | null
+          objective?: string | null
           organization_id?: string
+          questions_deadline?: string | null
+          reference_number?: string | null
+          required_documents?: string[] | null
+          scope_of_work?: string | null
+          site_visit_date?: string | null
+          site_visit_location?: string | null
+          site_visit_required?: boolean | null
           status?: string
+          submission_format?: string | null
+          tender_opening_date?: string | null
+          tender_opening_type?: string | null
           title?: string
           updated_at?: string
         }
