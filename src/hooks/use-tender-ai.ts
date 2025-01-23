@@ -6,12 +6,27 @@ export const useTenderAI = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const generateDescription = async (title: string) => {
+  const generateContent = async (field: string, context: string) => {
     setIsGenerating(true);
     try {
-      const prompt = `Generate a professional tender description for: "${title}". Include key requirements, specifications, and evaluation criteria. Keep it concise but comprehensive.`;
+      let prompt = '';
+      switch (field) {
+        case 'description':
+          prompt = `Generate a professional tender description for: "${context}". Include key requirements, specifications, and evaluation criteria. Keep it concise but comprehensive.`;
+          break;
+        case 'objective':
+          prompt = `Generate a clear objective for a tender about: "${context}". Focus on the main goals and desired outcomes.`;
+          break;
+        case 'scope':
+          prompt = `Generate a detailed scope of work for a tender about: "${context}". Include deliverables, timelines, and requirements.`;
+          break;
+        case 'criteria':
+          prompt = `Generate eligibility criteria for a tender about: "${context}". Include qualifications, experience, and requirements.`;
+          break;
+        default:
+          prompt = `Generate professional content for the ${field} section of a tender about: "${context}".`;
+      }
       
-      // Fixed the function invocation
       const { data, error } = await supabase.functions.invoke('generate-tender', {
         body: { prompt },
         headers: {
@@ -21,20 +36,20 @@ export const useTenderAI = () => {
 
       if (error) {
         console.error('Supabase function error:', error);
-        throw new Error('Failed to generate description');
+        throw new Error('Failed to generate content');
       }
 
       if (!data?.generatedText) {
-        throw new Error('No description was generated');
+        throw new Error('No content was generated');
       }
 
       return data.generatedText;
     } catch (error) {
-      console.error('Error generating tender description:', error);
+      console.error('Error generating tender content:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to generate description. Please try again.",
+        description: "Failed to generate content. Please try again.",
       });
       return null;
     } finally {
@@ -43,7 +58,7 @@ export const useTenderAI = () => {
   };
 
   return {
-    generateDescription,
+    generateContent,
     isGenerating,
   };
 };

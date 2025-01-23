@@ -4,6 +4,7 @@ import * as z from "zod"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
+import { useTenderAI } from "@/hooks/use-tender-ai"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Calendar, FileText, Clock, Coins, User, Mail, Phone, Building, Target, FileCheck, Users, MapPin } from "lucide-react"
+import { ArrowLeft, FileText, Wand2 } from "lucide-react"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -50,6 +51,7 @@ const CreateTender = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { generateContent, isGenerating } = useTenderAI()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -138,6 +140,40 @@ const CreateTender = () => {
     }
   }
 
+  const handleAIGenerate = async (field: string) => {
+    const title = form.getValues('title');
+    if (!title) {
+      toast({
+        title: "Title Required",
+        description: "Please enter a tender title first to generate relevant content.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const content = await generateContent(field, title);
+    if (content) {
+      form.setValue(field as any, content, { shouldValidate: true });
+      toast({
+        title: "Content Generated",
+        description: `AI-generated content for ${field} has been added.`,
+      });
+    }
+  };
+
+  const AIButton = ({ field }: { field: string }) => (
+    <Button
+      type="button"
+      variant="outline"
+      size="icon"
+      className="h-8 w-8"
+      disabled={isGenerating}
+      onClick={() => handleAIGenerate(field)}
+    >
+      <Wand2 className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="max-w-[900px] mx-auto">
       <Card className="bg-background/60 shadow-none border-none">
@@ -173,24 +209,13 @@ const CreateTender = () => {
 
                 <FormField
                   control={form.control}
-                  name="reference_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Reference Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter reference number" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel className="flex items-center justify-between">
+                        Description
+                        <AIButton field="description" />
+                      </FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Enter tender description"
@@ -235,62 +260,21 @@ const CreateTender = () => {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="contact_phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contact Phone</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter contact phone" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
               </div>
 
-              {/* Details */}
+              {/* Tender Details */}
               <div className="space-y-4">
                 <h3 className="text-lg font-medium">Tender Details</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter tender category" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="budget"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Budget</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Enter budget amount" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
                 <FormField
                   control={form.control}
                   name="objective"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Objective</FormLabel>
+                      <FormLabel className="flex items-center justify-between">
+                        Objective
+                        <AIButton field="objective" />
+                      </FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Enter tender objective"
@@ -308,7 +292,10 @@ const CreateTender = () => {
                   name="scope_of_work"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Scope of Work</FormLabel>
+                      <FormLabel className="flex items-center justify-between">
+                        Scope of Work
+                        <AIButton field="scope" />
+                      </FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Enter scope of work"
@@ -320,37 +307,22 @@ const CreateTender = () => {
                     </FormItem>
                   )}
                 />
-              </div>
 
-              {/* Requirements */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Requirements & Criteria</h3>
                 <FormField
                   control={form.control}
                   name="eligibility_criteria"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Eligibility Criteria</FormLabel>
+                      <FormLabel className="flex items-center justify-between">
+                        Eligibility Criteria
+                        <AIButton field="criteria" />
+                      </FormLabel>
                       <FormControl>
                         <Textarea 
                           placeholder="Enter eligibility criteria"
                           className="min-h-[100px]"
                           {...field}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="contract_duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Contract Duration</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter contract duration" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
