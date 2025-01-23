@@ -12,6 +12,7 @@ import Index from "./pages/Index"
 import Login from "./pages/auth/Login"
 import CreateTender from "./pages/tenders/Create"
 import EditTender from "./pages/tenders/Edit"
+import VendorsIndex from "./pages/vendors/Index"
 import "./i18n/config"
 
 const queryClient = new QueryClient()
@@ -44,6 +45,7 @@ const App = () => (
                         <Route path="/" element={<Index />} />
                         <Route path="/tenders/create" element={<CreateTender />} />
                         <Route path="/tenders/edit/:id" element={<EditTender />} />
+                        <Route path="/vendors" element={<VendorsIndex />} />
                       </Routes>
                     </div>
                   </main>
