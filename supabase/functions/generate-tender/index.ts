@@ -7,16 +7,34 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { prompt } = await req.json()
+    // Validate request body exists
+    const body = await req.text()
+    if (!body) {
+      throw new Error('Request body is empty')
+    }
+
+    // Parse JSON safely
+    let requestData
+    try {
+      requestData = JSON.parse(body)
+    } catch (e) {
+      console.error('JSON parse error:', e)
+      throw new Error('Invalid JSON in request body')
+    }
+
+    const { prompt } = requestData
     
     if (!prompt) {
       throw new Error('No prompt provided')
     }
+
+    console.log('Processing prompt:', prompt)
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -38,13 +56,20 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
-      const error = await response.text()
-      console.error('OpenAI API error:', error)
-      throw new Error(`OpenAI API error: ${error}`)
+      const errorText = await response.text()
+      console.error('OpenAI API error:', errorText)
+      throw new Error(`OpenAI API error: ${errorText}`)
     }
 
     const data = await response.json()
+    
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI API')
+    }
+
     const generatedText = data.choices[0].message.content
+
+    console.log('Successfully generated text')
 
     return new Response(
       JSON.stringify({ generatedText }), 
