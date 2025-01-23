@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Building2, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface TenderCardProps {
+  id: string;
   title: string;
   organization: string;
   deadline: string;
@@ -10,7 +12,9 @@ interface TenderCardProps {
   budget: string;
 }
 
-const TenderCard = ({ title, organization, deadline, status, budget }: TenderCardProps) => {
+const TenderCard = ({ id, title, organization, deadline, status, budget }: TenderCardProps) => {
+  const navigate = useNavigate();
+  
   const statusColors = {
     draft: "bg-secondary",
     active: "bg-emerald-100 text-emerald-700",
@@ -18,7 +22,10 @@ const TenderCard = ({ title, organization, deadline, status, budget }: TenderCar
   };
 
   return (
-    <Card className="group transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <Card 
+      className="group cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+      onClick={() => navigate(`/tenders/edit/${id}`)}
+    >
       <CardHeader className="p-3 sm:p-4">
         <div className="flex justify-between items-start gap-2 sm:gap-4">
           <CardTitle className="text-sm sm:text-base font-medium transition-colors duration-200 group-hover:text-primary line-clamp-2">

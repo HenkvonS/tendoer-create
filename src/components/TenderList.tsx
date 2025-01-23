@@ -2,9 +2,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, Building2, FileText, ArrowUp, ArrowDown } from "lucide-react";
 import { SortConfig } from "@/utils/sortTenders";
+import { useNavigate } from "react-router-dom";
 
 interface TenderListProps {
   tenders: {
+    id: string;
     title: string;
     organization: string;
     deadline: string;
@@ -16,6 +18,8 @@ interface TenderListProps {
 }
 
 const TenderList = ({ tenders, sortConfig, onSort }: TenderListProps) => {
+  const navigate = useNavigate();
+  
   const statusColors = {
     draft: "bg-secondary",
     active: "bg-emerald-100 text-emerald-700",
@@ -29,6 +33,10 @@ const TenderList = ({ tenders, sortConfig, onSort }: TenderListProps) => {
     ) : (
       <ArrowDown className="h-3 w-3 ml-1" />
     );
+  };
+
+  const handleRowClick = (id: string) => {
+    navigate(`/tenders/edit/${id}`);
   };
 
   return (
@@ -69,8 +77,12 @@ const TenderList = ({ tenders, sortConfig, onSort }: TenderListProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tenders.map((tender, index) => (
-            <TableRow key={index} className="group cursor-pointer hover:bg-muted/50">
+          {tenders.map((tender) => (
+            <TableRow 
+              key={tender.id} 
+              className="group cursor-pointer hover:bg-muted/50"
+              onClick={() => handleRowClick(tender.id)}
+            >
               <TableCell className="font-medium">{tender.title}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
