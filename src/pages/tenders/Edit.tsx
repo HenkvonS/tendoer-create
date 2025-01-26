@@ -1,13 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { MarkdownEditor } from "@/components/ui/markdown-editor";
 
 const EditTender = () => {
   const { id } = useParams<{ id: string }>();
@@ -119,7 +119,7 @@ const EditTender = () => {
       </div>
 
       <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border">
-        <Textarea
+        <MarkdownEditor
           value={content}
           onChange={(e) => setContent(e.target.value)}
           className="min-h-[500px] resize-none border-0 p-4 focus-visible:ring-0"
