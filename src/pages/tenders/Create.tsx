@@ -507,7 +507,7 @@ const CreateTender = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default CreateTender
+export default CreateTender;
