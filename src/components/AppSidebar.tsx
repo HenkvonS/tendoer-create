@@ -23,6 +23,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
   SidebarHeader,
+  SidebarFooter,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom"
@@ -237,6 +238,14 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="border-t p-4">
+        <img 
+          src="/lovable-uploads/ef11fbcb-dd0e-41ec-b9f8-a65e87817046.png" 
+          alt="Tendoer Logo" 
+          className="h-8 w-auto mx-auto opacity-70 group-data-[collapsible=icon]:h-6"
+        />
+      </SidebarFooter>
     </Sidebar>
   )
 }
