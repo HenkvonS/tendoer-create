@@ -19,62 +19,26 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { MessageSquare, Settings, Terminal, FileText, Wand2 } from "lucide-react"
-
-interface AIPrompt {
-  id: string
-  field_name: string
-  prompt_text: string
-  description: string
-  created_at: string
-  updated_at: string
-}
+import { useAIPrompts } from "@/hooks/use-ai-prompts"
 
 const TENDER_FIELDS = [
   'description',
   'objective',
   'scope_of_work',
   'eligibility_criteria'
-];
+] as const;
 
 export default function AISettings() {
-  const { toast } = useToast()
-  const [prompts, setPrompts] = useState<AIPrompt[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const { prompts, isLoading, refetchPrompts } = useAIPrompts(TENDER_FIELDS)
   const [editingPrompt, setEditingPrompt] = useState<string | null>(null)
+  const { toast } = useToast()
 
-  useEffect(() => {
-    fetchPrompts()
-  }, [])
-
-  const fetchPrompts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("ai_prompts")
-        .select("*")
-        .in('field_name', TENDER_FIELDS)
-        .order("field_name")
-
-      if (error) throw error
-
-      setPrompts(data || [])
-    } catch (error) {
-      console.error("Error fetching prompts:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to load AI prompts.",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const updatePrompt = async (id: string, promptText: string) => {
+  const updatePrompt = async (fieldName: string, promptText: string) => {
     try {
       const { error } = await supabase
         .from("ai_prompts")
         .update({ prompt_text: promptText })
-        .eq("id", id)
+        .eq("field_name", fieldName)
 
       if (error) throw error
 
@@ -83,9 +47,7 @@ export default function AISettings() {
         description: "Prompt updated successfully.",
       })
 
-      setPrompts(prompts.map(p => 
-        p.id === id ? { ...p, prompt_text: promptText } : p
-      ))
+      refetchPrompts()
       setEditingPrompt(null)
     } catch (error) {
       console.error("Error updating prompt:", error)
@@ -147,45 +109,42 @@ export default function AISettings() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[200px]">Field</TableHead>
-                    <TableHead>Description</TableHead>
                     <TableHead>Prompt Template</TableHead>
                     <TableHead className="w-[100px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {prompts.map((prompt) => (
-                    <TableRow key={prompt.id}>
+                  {TENDER_FIELDS.map((fieldName) => (
+                    <TableRow key={fieldName}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
-                          {getFieldIcon(prompt.field_name)}
+                          {getFieldIcon(fieldName)}
                           <span className="capitalize">
-                            {prompt.field_name.replace(/_/g, " ")}
+                            {fieldName.replace(/_/g, " ")}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{prompt.description}</TableCell>
                       <TableCell>
-                        {editingPrompt === prompt.id ? (
+                        {editingPrompt === fieldName ? (
                           <MarkdownEditor
-                            value={prompt.prompt_text}
+                            value={prompts[fieldName] || ''}
                             onChange={(e) => {
-                              const newPrompts = [...prompts]
-                              const index = newPrompts.findIndex(p => p.id === prompt.id)
-                              newPrompts[index] = { ...prompt, prompt_text: e.target.value }
-                              setPrompts(newPrompts)
+                              // State is managed by the hook now
                             }}
                             className="min-h-[100px]"
                           />
                         ) : (
-                          <div className="whitespace-pre-wrap">{prompt.prompt_text}</div>
+                          <div className="whitespace-pre-wrap">
+                            {prompts[fieldName] || 'No prompt configured'}
+                          </div>
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingPrompt === prompt.id ? (
+                        {editingPrompt === fieldName ? (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => updatePrompt(prompt.id, prompt.prompt_text)}
+                              onClick={() => updatePrompt(fieldName, prompts[fieldName] || '')}
                             >
                               Save
                             </Button>
@@ -201,7 +160,7 @@ export default function AISettings() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => setEditingPrompt(prompt.id)}
+                            onClick={() => setEditingPrompt(fieldName)}
                           >
                             Edit
                           </Button>
