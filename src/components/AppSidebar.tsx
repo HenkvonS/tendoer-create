@@ -47,6 +47,7 @@ export function AppSidebar() {
           const { data: profiles, error } = await supabase
             .from('profiles')
             .select('organization_name')
+            .eq('id', user.id)
             .single()
 
           if (error) throw error
@@ -122,6 +123,9 @@ export function AppSidebar() {
     }
   }
 
+  // Get user's email name (everything before @)
+  const userName = user?.email ? user.email.split('@')[0] : 'Loading...'
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -133,10 +137,10 @@ export function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">{user?.email || 'Loading...'}</span>
+            <span className="text-sm font-medium capitalize">{userName}</span>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Building2 className="h-3 w-3" />
-              <span>{organization || 'Loading...'}</span>
+              <span className="truncate">{organization || 'Loading...'}</span>
             </div>
           </div>
         </div>
