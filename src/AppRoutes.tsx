@@ -19,41 +19,34 @@ const AppRoutes = () => {
   return (
     <TooltipProvider>
       <Toaster />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/*"
-          element={
-            <SidebarProvider>
-              <div className="flex min-h-screen w-full">
-                <AppSidebar />
-                <main className="flex-1">
-                  <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                    <div className="flex h-10 items-center justify-between px-3">
-                      <SidebarTrigger />
-                      <div className="flex items-center gap-2">
-                        <ThemeToggle />
-                        <LanguageSelector />
-                      </div>
-                    </div>
-                  </header>
-                  <div className="p-4">
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/tenders/create" element={<CreateTender />} />
-                      <Route path="/tenders/edit/:id" element={<EditTender />} />
-                      <Route path="/tenders/view/:id" element={<ViewTender />} />
-                      <Route path="/vendors" element={<VendorsIndex />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/settings/ai" element={<AISettings />} />
-                    </Routes>
-                  </div>
-                </main>
+      <div className="flex min-h-screen w-full">
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="flex-1">
+            <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="flex h-10 items-center justify-between px-3">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2">
+                  <ThemeToggle />
+                  <LanguageSelector />
+                </div>
               </div>
-            </SidebarProvider>
-          }
-        />
-      </Routes>
+            </header>
+            <div className="p-4">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/tenders/create" element={<CreateTender />} />
+                <Route path="/tenders/edit/:id" element={<EditTender />} />
+                <Route path="/tenders/view/:id" element={<ViewTender />} />
+                <Route path="/vendors" element={<VendorsIndex />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings/ai" element={<AISettings />} />
+                <Route path="/login" element={<Login />} />
+              </Routes>
+            </div>
+          </main>
+        </SidebarProvider>
+      </div>
     </TooltipProvider>
   )
 }
