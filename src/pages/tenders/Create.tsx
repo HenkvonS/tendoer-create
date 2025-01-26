@@ -23,7 +23,6 @@ import { MarkdownEditor } from "@/components/ui/markdown-editor"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { ArrowLeft, FileText, Wand2 } from "lucide-react"
-import { useState, useEffect } from "react"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -63,74 +62,6 @@ const CreateTender = () => {
   const { toast } = useToast()
   const { generateContent, isGenerating } = useTenderAI()
   const { prompts, isLoading: isLoadingPrompts, refetchPrompts } = useAIPrompts(TENDER_AI_FIELDS)
-  const [profileId, setProfileId] = useState<string | null>(null)
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-          toast({
-            title: "Error",
-            description: "You must be logged in to create a tender",
-            variant: "destructive",
-          })
-          navigate("/auth")
-          return
-        }
-
-        const { data: profiles, error } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("id", user.id)
-          .single()
-
-        if (error) {
-          console.error("Error fetching profile:", error)
-          toast({
-            title: "Error",
-            description: "Failed to fetch profile. Please try again.",
-            variant: "destructive",
-          })
-          return
-        }
-
-        if (!profiles) {
-          const { data: newProfile, error: createError } = await supabase
-            .from("profiles")
-            .insert([{ 
-              id: user.id,
-              organization_name: "Default Organization"
-            }])
-            .select()
-            .single()
-
-          if (createError) {
-            console.error("Error creating profile:", createError)
-            toast({
-              title: "Error",
-              description: "Failed to create profile. Please try again.",
-              variant: "destructive",
-            })
-            return
-          }
-
-          setProfileId(newProfile.id)
-        } else {
-          setProfileId(profiles.id)
-        }
-      } catch (error) {
-        console.error("Error in profile setup:", error)
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        })
-      }
-    }
-
-    fetchProfile()
-  }, [navigate, toast])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -161,22 +92,12 @@ const CreateTender = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!profileId) {
-      toast({
-        title: "Error",
-        description: "Profile not found. Please try again.",
-        variant: "destructive",
-      })
-      return
-    }
-
     try {
       const { error } = await supabase.from("tenders").insert({
         title: values.title,
         description: values.description,
         budget: values.budget ? parseFloat(values.budget) : null,
         deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
-        organization_id: profileId,
         reference_number: values.reference_number,
         contact_person: values.contact_person,
         contact_email: values.contact_email,
