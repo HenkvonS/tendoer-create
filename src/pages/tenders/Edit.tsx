@@ -14,21 +14,19 @@ const EditTender = () => {
   const navigate = useNavigate();
   const [content, setContent] = useState("");
 
-  // Redirect if no ID is provided
+  // Early return if no ID is provided
   useEffect(() => {
-    if (!id) {
-      toast.error("No tender ID provided");
+    if (!id || id === "undefined") {
+      toast.error("Invalid tender ID");
       navigate("/tenders");
-      return;
     }
   }, [id, navigate]);
 
   const { data: tender, isLoading } = useQuery({
     queryKey: ["tender", id],
     queryFn: async () => {
-      if (!id) {
-        toast.error("Invalid tender ID");
-        navigate("/tenders");
+      // Additional validation before making the query
+      if (!id || id === "undefined") {
         throw new Error("Invalid tender ID");
       }
 
@@ -39,7 +37,6 @@ const EditTender = () => {
         .maybeSingle();
 
       if (error) {
-        toast.error("Failed to load tender");
         console.error("Load error:", error);
         throw error;
       }
@@ -53,11 +50,11 @@ const EditTender = () => {
       setContent(data.description || "");
       return data;
     },
-    enabled: !!id, // Only run query if we have an ID
+    enabled: !!id && id !== "undefined", // Only run query if we have a valid ID
   });
 
   const handleSave = async () => {
-    if (!id) return;
+    if (!id || id === "undefined") return;
 
     try {
       const { error } = await supabase
