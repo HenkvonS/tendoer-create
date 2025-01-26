@@ -18,7 +18,8 @@ const EditTender = () => {
   useEffect(() => {
     if (!id) {
       toast.error("No tender ID provided");
-      navigate("/");
+      navigate("/tenders");
+      return;
     }
   }, [id, navigate]);
 
@@ -27,7 +28,7 @@ const EditTender = () => {
     queryFn: async () => {
       if (!id) {
         toast.error("Invalid tender ID");
-        navigate("/");
+        navigate("/tenders");
         throw new Error("Invalid tender ID");
       }
 
@@ -45,14 +46,14 @@ const EditTender = () => {
 
       if (!data) {
         toast.error("Tender not found");
-        navigate("/");
+        navigate("/tenders");
         throw new Error("Tender not found");
       }
 
       setContent(data.description || "");
       return data;
     },
-    enabled: !!id,
+    enabled: !!id, // Only run query if we have an ID
   });
 
   const handleSave = async () => {
