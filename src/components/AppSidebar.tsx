@@ -52,11 +52,14 @@ export function AppSidebar() {
 
           if (error) throw error
           if (profiles) {
-            setOrganization(profiles.organization_name)
+            // Only set organization if it's not empty or null
+            setOrganization(profiles.organization_name || 'Demo Organization')
           }
         }
       } catch (error) {
         console.error('Error fetching profile:', error)
+        // Set default organization on error
+        setOrganization('Demo Organization')
       }
     }
 
@@ -123,8 +126,15 @@ export function AppSidebar() {
     }
   }
 
-  // Get user's email name (everything before @)
-  const userName = user?.email ? user.email.split('@')[0] : 'Loading...'
+  // Get display name - either from email or use default
+  const getDisplayName = () => {
+    if (!user?.email) return 'Demo User'
+    const emailName = user.email.split('@')[0]
+    // If email is just numbers or very short, use demo name
+    return /^\d+$/.test(emailName) || emailName.length < 3 ? 'Demo User' : emailName
+  }
+
+  const displayName = getDisplayName()
 
   return (
     <Sidebar>
@@ -137,10 +147,10 @@ export function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium capitalize">{userName}</span>
+            <span className="text-sm font-medium capitalize">{displayName}</span>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Building2 className="h-3 w-3" />
-              <span className="truncate">{organization || 'Loading...'}</span>
+              <span className="truncate">{organization}</span>
             </div>
           </div>
         </div>
