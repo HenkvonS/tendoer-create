@@ -6,26 +6,23 @@ export const useTenderAI = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const generateContent = async (field: string, context: string) => {
+  const generateContent = async (field: string, context: any) => {
     setIsGenerating(true);
     try {
-      let prompt = '';
-      switch (field) {
-        case 'description':
-          prompt = `Generate a professional tender description for: "${context}". Include key requirements, specifications, and evaluation criteria. Keep it concise but comprehensive.`;
-          break;
-        case 'objective':
-          prompt = `Generate a clear objective for a tender about: "${context}". Focus on the main goals and desired outcomes. Be specific and measurable.`;
-          break;
-        case 'scope_of_work':
-          prompt = `Generate a detailed scope of work for a tender about: "${context}". Include deliverables, timelines, and specific requirements. Be thorough but clear.`;
-          break;
-        case 'eligibility_criteria':
-          prompt = `Generate eligibility criteria for a tender about: "${context}". Include required qualifications, experience, certifications, and other essential requirements. Be specific and comprehensive.`;
-          break;
-        default:
-          prompt = `Generate professional content for the ${field} section of a tender about: "${context}". Ensure the content is clear, specific, and follows tender documentation best practices.`;
-      }
+      // Create a comprehensive prompt that includes all tender details
+      const prompt = `Generate professional content for a tender with the following details:
+Title: ${context.title}
+Budget: ${context.budget || 'Not specified'}
+Category: ${context.category || 'Not specified'}
+Contact Person: ${context.contact_person || 'Not specified'}
+Contact Email: ${context.contact_email || 'Not specified'}
+Contact Phone: ${context.contact_phone || 'Not specified'}
+Deadline: ${context.deadline || 'Not specified'}
+Site Visit Required: ${context.site_visit_required ? 'Yes' : 'No'}
+${context.site_visit_required ? `Site Visit Date: ${context.site_visit_date || 'Not specified'}` : ''}
+${context.site_visit_required ? `Site Visit Location: ${context.site_visit_location || 'Not specified'}` : ''}
+
+Please generate content for the "${field}" section of this tender. The content should be professional, clear, and comprehensive.`;
 
       console.log('Sending prompt to generate-tender:', prompt);
       

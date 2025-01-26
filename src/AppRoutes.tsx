@@ -9,6 +9,7 @@ import Index from "./pages/Index"
 import Login from "./pages/auth/Login"
 import CreateTender from "./pages/tenders/Create"
 import EditTender from "./pages/tenders/Edit"
+import ViewTender from "./pages/tenders/View"
 import VendorsIndex from "./pages/vendors/Index"
 import Settings from "./pages/settings/Index"
 import AISettings from "./pages/settings/AISettings"
@@ -41,6 +42,7 @@ const AppRoutes = () => {
                       <Route path="/" element={<Index />} />
                       <Route path="/tenders/create" element={<CreateTender />} />
                       <Route path="/tenders/edit/:id" element={<EditTender />} />
+                      <Route path="/tenders/view/:id" element={<ViewTender />} />
                       <Route path="/vendors" element={<VendorsIndex />} />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/settings/ai" element={<AISettings />} />
