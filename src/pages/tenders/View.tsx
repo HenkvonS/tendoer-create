@@ -4,22 +4,30 @@ import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { FileText, Calendar, MapPin, User, Mail, Phone, Building2 } from "lucide-react"
+import { toast } from "sonner"
 
 const ViewTender = () => {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
 
-  const { data: tender, isLoading } = useQuery({
+  const { data: tender, isLoading, error } = useQuery({
     queryKey: ['tender', id],
     queryFn: async () => {
+      if (!id) throw new Error('No tender ID provided')
+      
       const { data, error } = await supabase
         .from('tenders')
         .select('*')
         .eq('id', id)
         .maybeSingle()
 
-      if (error) throw error
+      if (error) {
+        toast.error('Failed to load tender')
+        throw error
+      }
+      
       return data
     },
+    enabled: !!id,
   })
 
   if (isLoading) {
@@ -32,7 +40,7 @@ const ViewTender = () => {
     )
   }
 
-  if (!tender) {
+  if (error || !tender) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <FileText className="h-12 w-12 text-muted-foreground mb-4" />
