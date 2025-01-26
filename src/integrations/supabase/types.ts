@@ -12,6 +12,7 @@ export type Database = {
       ai_prompts: {
         Row: {
           created_at: string
+          description: string
           field_name: string
           id: string
           prompt_text: string
@@ -19,6 +20,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          description?: string
           field_name: string
           id?: string
           prompt_text: string
@@ -26,6 +28,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          description?: string
           field_name?: string
           id?: string
           prompt_text?: string
@@ -309,7 +312,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: {
+          user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user"
