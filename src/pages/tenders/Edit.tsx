@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { MarkdownEditor } from "@/components/ui/markdown-editor";
+import { AITextEditor } from "@/components/AITextEditor";
 
 const EditTender = () => {
   const { id } = useParams<{ id: string }>();
@@ -120,9 +120,9 @@ const EditTender = () => {
       </div>
 
       <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border">
-        <MarkdownEditor
+        <AITextEditor
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={setContent}
           className="min-h-[500px] resize-none border-0 p-4 focus-visible:ring-0"
           placeholder="Start writing your tender description..."
         />
