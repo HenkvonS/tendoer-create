@@ -11,6 +11,7 @@ import CreateTender from "./pages/tenders/Create"
 import EditTender from "./pages/tenders/Edit"
 import VendorsIndex from "./pages/vendors/Index"
 import Settings from "./pages/settings/Index"
+import AISettings from "./pages/settings/AISettings"
 import "./i18n/config"
 
 const AppRoutes = () => {
@@ -42,6 +43,7 @@ const AppRoutes = () => {
                       <Route path="/tenders/edit/:id" element={<EditTender />} />
                       <Route path="/vendors" element={<VendorsIndex />} />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/settings/ai" element={<AISettings />} />
                     </Routes>
                   </div>
                 </main>
