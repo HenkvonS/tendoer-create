@@ -20,7 +20,11 @@ export function TenderDetails({ control }: TenderDetailsProps) {
           <FormItem>
             <FormLabel className="flex items-center justify-between">
               Objective
-              <AIButton field="objective" />
+              <AIButton 
+                field="objective" 
+                onGenerate={(content) => field.onChange(content)}
+                context={control._formValues}
+              />
             </FormLabel>
             <FormControl>
               <MarkdownEditor 
@@ -40,7 +44,11 @@ export function TenderDetails({ control }: TenderDetailsProps) {
           <FormItem>
             <FormLabel className="flex items-center justify-between">
               Scope of Work
-              <AIButton field="scope_of_work" />
+              <AIButton 
+                field="scope_of_work" 
+                onGenerate={(content) => field.onChange(content)}
+                context={control._formValues}
+              />
             </FormLabel>
             <FormControl>
               <MarkdownEditor 
@@ -60,7 +68,11 @@ export function TenderDetails({ control }: TenderDetailsProps) {
           <FormItem>
             <FormLabel className="flex items-center justify-between">
               Eligibility Criteria
-              <AIButton field="eligibility_criteria" />
+              <AIButton 
+                field="eligibility_criteria" 
+                onGenerate={(content) => field.onChange(content)}
+                context={control._formValues}
+              />
             </FormLabel>
             <FormControl>
               <MarkdownEditor 

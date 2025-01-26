@@ -35,7 +35,11 @@ export function TenderBasicInfo({ control }: TenderBasicInfoProps) {
           <FormItem>
             <FormLabel className="flex items-center justify-between">
               Description
-              <AIButton field="description" />
+              <AIButton 
+                field="description" 
+                onGenerate={(content) => field.onChange(content)}
+                context={control._formValues}
+              />
             </FormLabel>
             <FormControl>
               <MarkdownEditor 
