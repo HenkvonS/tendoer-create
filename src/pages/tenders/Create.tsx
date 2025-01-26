@@ -49,19 +49,17 @@ const formSchema = z.object({
   is_public: z.boolean().default(true),
 })
 
-const TENDER_AI_FIELDS = [
-  'description',
-  'objective',
-  'scope_of_work',
-  'eligibility_criteria'
-] as const;
-
 const CreateTender = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { toast } = useToast()
   const { generateContent, isGenerating } = useTenderAI()
-  const { prompts, isLoading: isLoadingPrompts, refetchPrompts } = useAIPrompts(TENDER_AI_FIELDS)
+  const { prompts, isLoading: isLoadingPrompts, refetchPrompts } = useAIPrompts([
+    'description',
+    'objective',
+    'scope_of_work',
+    'eligibility_criteria'
+  ])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -93,7 +91,8 @@ const CreateTender = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { error } = await supabase.from("tenders").insert({
+      // First, create the tender
+      const { data: tender, error } = await supabase.from("tenders").insert({
         title: values.title,
         description: values.description,
         budget: values.budget ? parseFloat(values.budget) : null,
@@ -116,16 +115,30 @@ const CreateTender = () => {
         tender_opening_type: values.tender_opening_type,
         approval_authority: values.approval_authority,
         is_public: values.is_public,
-      })
+      }).select().single()
 
       if (error) throw error
+
+      // Generate AI content for the tender
+      const generatedContent = await generateContent('description', values)
+      
+      if (generatedContent) {
+        // Update the tender with AI-generated content
+        const { error: updateError } = await supabase
+          .from("tenders")
+          .update({ description: generatedContent })
+          .eq("id", tender.id)
+
+        if (updateError) throw updateError
+      }
 
       toast({
         title: "Success",
         description: "Tender created successfully",
       })
 
-      navigate("/")
+      // Navigate to the edit page with the new tender ID
+      navigate(`/tenders/edit/${tender.id}`)
     } catch (error) {
       console.error("Error creating tender:", error)
       toast({
