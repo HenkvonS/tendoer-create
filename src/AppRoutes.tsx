@@ -6,7 +6,6 @@ import { AppSidebar } from "@/components/AppSidebar"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import LanguageSelector from "@/components/LanguageSelector"
 import Index from "./pages/Index"
-import Login from "./pages/auth/Login"
 import CreateTender from "./pages/tenders/Create"
 import EditTender from "./pages/tenders/Edit"
 import ViewTender from "./pages/tenders/View"
@@ -41,7 +40,6 @@ const AppRoutes = () => {
                 <Route path="/vendors" element={<VendorsIndex />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/settings/ai" element={<AISettings />} />
-                <Route path="/login" element={<Login />} />
               </Routes>
             </div>
           </main>

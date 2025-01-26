@@ -2,13 +2,11 @@ import {
   Home, 
   FileText, 
   Users, 
-  Settings, 
-  LogOut, 
+  Settings2,
   FolderOpen,
   List,
   LayoutGrid,
   Menu,
-  Settings2,
   UserRound,
   Building2
 } from "lucide-react"
@@ -26,46 +24,10 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useNavigate } from "react-router-dom"
-import { supabase } from "@/integrations/supabase/client"
-import { useToast } from "@/hooks/use-toast"
 import { useTranslation } from "react-i18next"
-import { useEffect, useState } from "react"
 
 export function AppSidebar() {
-  const navigate = useNavigate()
-  const { toast } = useToast()
   const { t } = useTranslation()
-  const [organization, setOrganization] = useState("")
-  const [user, setUser] = useState<any>(null)
-
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          setUser(user)
-          const { data: profiles, error } = await supabase
-            .from('profiles')
-            .select('organization_name')
-            .eq('id', user.id)
-            .single()
-
-          if (error) throw error
-          if (profiles) {
-            // Only set organization if it's not empty or null
-            setOrganization(profiles.organization_name || 'Demo Organization')
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error)
-        // Set default organization on error
-        setOrganization('Demo Organization')
-      }
-    }
-
-    getProfile()
-  }, [])
 
   const quickActions = [
     {
@@ -106,37 +68,6 @@ export function AppSidebar() {
     },
   ]
 
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
-
-      toast({
-        title: t('menu.logout'),
-        description: "You have been successfully logged out.",
-      })
-      
-      navigate("/login")
-    } catch (error) {
-      console.error("Error logging out:", error)
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-      })
-    }
-  }
-
-  // Get display name - either from email or use default
-  const getDisplayName = () => {
-    if (!user?.email) return 'Demo User'
-    const emailName = user.email.split('@')[0]
-    // If email is just numbers or very short, use demo name
-    return /^\d+$/.test(emailName) || emailName.length < 3 ? 'Demo User' : emailName
-  }
-
-  const displayName = getDisplayName()
-
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -148,10 +79,10 @@ export function AppSidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-medium capitalize">{displayName}</span>
+            <span className="text-sm font-medium">Demo User</span>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Building2 className="h-3 w-3" />
-              <span className="truncate">{organization}</span>
+              <span className="truncate">Demo Organization</span>
             </div>
           </div>
         </div>
@@ -228,12 +159,6 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                  <span>{t('menu.logout')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
