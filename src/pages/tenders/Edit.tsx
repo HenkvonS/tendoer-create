@@ -10,7 +10,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const EditTender = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [content, setContent] = useState("");
 
@@ -44,7 +44,7 @@ const EditTender = () => {
       setContent(data.description || "");
       return data;
     },
-    retry: false,
+    enabled: !!id,
   });
 
   const handleSave = async () => {
