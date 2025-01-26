@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { MessageSquare, Settings, Terminal, FileText, Wand2 } from "lucide-react"
+import { MessageSquare, Settings, Terminal, FileText, Wand2, Save, X } from "lucide-react"
 import { useAIPrompts } from "@/hooks/use-ai-prompts"
 
 const TENDER_FIELDS = [
@@ -30,14 +30,20 @@ const TENDER_FIELDS = [
 
 export default function AISettings() {
   const { prompts, isLoading, refetchPrompts } = useAIPrompts(TENDER_FIELDS)
-  const [editingPrompt, setEditingPrompt] = useState<string | null>(null)
+  const [editingField, setEditingField] = useState<string | null>(null)
+  const [editedPrompt, setEditedPrompt] = useState("")
   const { toast } = useToast()
 
-  const updatePrompt = async (fieldName: string, promptText: string) => {
+  const handleEdit = (fieldName: string, promptText: string) => {
+    setEditingField(fieldName)
+    setEditedPrompt(promptText)
+  }
+
+  const handleSave = async (fieldName: string) => {
     try {
       const { error } = await supabase
         .from("ai_prompts")
-        .update({ prompt_text: promptText })
+        .update({ prompt_text: editedPrompt })
         .eq("field_name", fieldName)
 
       if (error) throw error
@@ -48,7 +54,7 @@ export default function AISettings() {
       })
 
       refetchPrompts()
-      setEditingPrompt(null)
+      setEditingField(null)
     } catch (error) {
       console.error("Error updating prompt:", error)
       toast({
@@ -57,6 +63,11 @@ export default function AISettings() {
         description: "Failed to update prompt.",
       })
     }
+  }
+
+  const handleCancel = () => {
+    setEditingField(null)
+    setEditedPrompt("")
   }
 
   const getFieldIcon = (fieldName: string) => {
@@ -125,12 +136,10 @@ export default function AISettings() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {editingPrompt === fieldName ? (
+                        {editingField === fieldName ? (
                           <MarkdownEditor
-                            value={prompts[fieldName] || ''}
-                            onChange={(e) => {
-                              // State is managed by the hook now
-                            }}
+                            value={editedPrompt}
+                            onChange={(e) => setEditedPrompt(e.target.value)}
                             className="min-h-[100px]"
                           />
                         ) : (
@@ -140,19 +149,23 @@ export default function AISettings() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {editingPrompt === fieldName ? (
+                        {editingField === fieldName ? (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => updatePrompt(fieldName, prompts[fieldName] || '')}
+                              onClick={() => handleSave(fieldName)}
+                              className="h-8"
                             >
+                              <Save className="h-4 w-4 mr-1" />
                               Save
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setEditingPrompt(null)}
+                              onClick={handleCancel}
+                              className="h-8"
                             >
+                              <X className="h-4 w-4 mr-1" />
                               Cancel
                             </Button>
                           </div>
@@ -160,7 +173,8 @@ export default function AISettings() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => setEditingPrompt(fieldName)}
+                            onClick={() => handleEdit(fieldName, prompts[fieldName] || '')}
+                            className="h-8"
                           >
                             Edit
                           </Button>
