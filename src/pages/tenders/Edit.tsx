@@ -6,13 +6,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Save, FileDown, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const EditTender = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [content, setContent] = useState("");
+
+  // Redirect if no ID is provided
+  useEffect(() => {
+    if (!id) {
+      toast.error("No tender ID provided");
+      navigate("/");
+    }
+  }, [id, navigate]);
 
   const { data: tender, isLoading } = useQuery({
     queryKey: ["tender", id],
