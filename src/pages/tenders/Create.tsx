@@ -1,53 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import * as z from "zod"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { useTenderAI } from "@/hooks/use-tender-ai"
 import { useAIPrompts } from "@/hooks/use-ai-prompts"
 import { supabase } from "@/integrations/supabase/client"
-import { AIPromptEditor } from "@/components/tender/AIPromptEditor"
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { MarkdownEditor } from "@/components/ui/markdown-editor"
-import { Switch } from "@/components/ui/switch"
+import { Form } from "@/components/ui/form"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { ArrowLeft, FileText, Wand2 } from "lucide-react"
-
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  budget: z.string().optional(),
-  deadline: z.string().optional(),
-  reference_number: z.string().optional(),
-  contact_person: z.string().optional(),
-  contact_email: z.string().email().optional(),
-  contact_phone: z.string().optional(),
-  category: z.string().optional(),
-  objective: z.string().optional(),
-  scope_of_work: z.string().optional(),
-  eligibility_criteria: z.string().optional(),
-  contract_duration: z.string().optional(),
-  submission_format: z.string().optional(),
-  questions_deadline: z.string().optional(),
-  site_visit_required: z.boolean().default(false),
-  site_visit_date: z.string().optional(),
-  site_visit_location: z.string().optional(),
-  tender_opening_date: z.string().optional(),
-  tender_opening_type: z.string().optional(),
-  approval_authority: z.string().optional(),
-  is_public: z.boolean().default(true),
-})
+import { ArrowLeft, FileText } from "lucide-react"
+import { TenderBasicInfo } from "@/components/tender/TenderBasicInfo"
+import { TenderContactInfo } from "@/components/tender/TenderContactInfo"
+import { TenderDetails } from "@/components/tender/TenderDetails"
+import { TenderDates } from "@/components/tender/TenderDates"
+import { TenderSiteVisit } from "@/components/tender/TenderSiteVisit"
+import { TenderOpening } from "@/components/tender/TenderOpening"
+import { TenderVisibility } from "@/components/tender/TenderVisibility"
+import { tenderFormSchema } from "@/lib/validations/tender"
+import { z } from "zod"
 
 const CreateTender = () => {
   const { t } = useTranslation()
@@ -61,8 +32,8 @@ const CreateTender = () => {
     'eligibility_criteria'
   ])
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof tenderFormSchema>>({
+    resolver: zodResolver(tenderFormSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -89,9 +60,8 @@ const CreateTender = () => {
     },
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof tenderFormSchema>) => {
     try {
-      // First, create the tender
       const { data: tender, error } = await supabase.from("tenders").insert({
         title: values.title,
         description: values.description,
@@ -119,11 +89,9 @@ const CreateTender = () => {
 
       if (error) throw error
 
-      // Generate AI content for the tender
       const generatedContent = await generateContent('description', values)
       
       if (generatedContent) {
-        // Update the tender with AI-generated content
         const { error: updateError } = await supabase
           .from("tenders")
           .update({ description: generatedContent })
@@ -137,7 +105,6 @@ const CreateTender = () => {
         description: "Tender created successfully",
       })
 
-      // Navigate to the edit page with the new tender ID
       navigate(`/tenders/edit/${tender.id}`)
     } catch (error) {
       console.error("Error creating tender:", error)
@@ -148,47 +115,6 @@ const CreateTender = () => {
       })
     }
   }
-
-  const handleAIGenerate = async (field: string) => {
-    const title = form.getValues('title');
-    if (!title) {
-      toast({
-        title: "Title Required",
-        description: "Please enter a tender title first to generate relevant content.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const content = await generateContent(field, title);
-    if (content) {
-      form.setValue(field as any, content, { shouldValidate: true });
-      toast({
-        title: "Content Generated",
-        description: `AI-generated content for ${field} has been added.`,
-      });
-    }
-  };
-
-  const AIButton = ({ field }: { field: string }) => (
-    <div className="flex items-center">
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        className="h-8 w-8"
-        disabled={isGenerating}
-        onClick={() => handleAIGenerate(field)}
-      >
-        <Wand2 className="h-4 w-4" />
-      </Button>
-      <AIPromptEditor
-        fieldName={field}
-        currentPrompt={prompts[field] || ""}
-        onPromptUpdate={refetchPrompts}
-      />
-    </div>
-  );
 
   return (
     <div className="max-w-[900px] mx-auto">
@@ -206,284 +132,13 @@ const CreateTender = () => {
         <CardContent className="space-y-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Basic Information</h3>
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter tender title" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Description
-                        <AIButton field="description" />
-                      </FormLabel>
-                      <FormControl>
-                        <MarkdownEditor 
-                          placeholder="Enter tender description"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Contact Information</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="contact_person"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contact Person</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter contact person name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="contact_email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contact Email</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="Enter contact email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Tender Details</h3>
-                <FormField
-                  control={form.control}
-                  name="objective"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Objective
-                        <AIButton field="objective" />
-                      </FormLabel>
-                      <FormControl>
-                        <MarkdownEditor 
-                          placeholder="Enter tender objective"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="scope_of_work"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Scope of Work
-                        <AIButton field="scope_of_work" />
-                      </FormLabel>
-                      <FormControl>
-                        <MarkdownEditor 
-                          placeholder="Enter scope of work"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="eligibility_criteria"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center justify-between">
-                        Eligibility Criteria
-                        <AIButton field="eligibility_criteria" />
-                      </FormLabel>
-                      <FormControl>
-                        <MarkdownEditor 
-                          placeholder="Enter eligibility criteria"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Dates & Deadlines</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="deadline"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Submission Deadline</FormLabel>
-                        <FormControl>
-                          <Input type="datetime-local" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="questions_deadline"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Questions Deadline</FormLabel>
-                        <FormControl>
-                          <Input type="datetime-local" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Site Visit</h3>
-                <FormField
-                  control={form.control}
-                  name="site_visit_required"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Site Visit Required</FormLabel>
-                        <FormDescription>
-                          Toggle if a site visit is required for this tender
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                {form.watch("site_visit_required") && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="site_visit_date"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Site Visit Date</FormLabel>
-                          <FormControl>
-                            <Input type="datetime-local" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="site_visit_location"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Site Visit Location</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter site visit location" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Tender Opening</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="tender_opening_date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Opening Date</FormLabel>
-                        <FormControl>
-                          <Input type="datetime-local" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tender_opening_type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Opening Type</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter opening type" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Visibility Settings</h3>
-                <FormField
-                  control={form.control}
-                  name="is_public"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Public Tender</FormLabel>
-                        <FormDescription>
-                          Make this tender visible to all users
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <TenderBasicInfo control={form.control} />
+              <TenderContactInfo control={form.control} />
+              <TenderDetails control={form.control} />
+              <TenderDates control={form.control} />
+              <TenderSiteVisit control={form.control} />
+              <TenderOpening control={form.control} />
+              <TenderVisibility control={form.control} />
 
               <div className="flex flex-col space-y-2 pt-2">
                 <Button 
@@ -507,7 +162,7 @@ const CreateTender = () => {
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default CreateTender;
+export default CreateTender

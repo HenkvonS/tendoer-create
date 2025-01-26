@@ -1,0 +1,26 @@
+import * as z from "zod"
+
+export const tenderFormSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  budget: z.string().optional(),
+  deadline: z.string().optional(),
+  reference_number: z.string().optional(),
+  contact_person: z.string().optional(),
+  contact_email: z.string().email().optional(),
+  contact_phone: z.string().optional(),
+  category: z.string().optional(),
+  objective: z.string().optional(),
+  scope_of_work: z.string().optional(),
+  eligibility_criteria: z.string().optional(),
+  contract_duration: z.string().optional(),
+  submission_format: z.string().optional(),
+  questions_deadline: z.string().optional(),
+  site_visit_required: z.boolean().default(false),
+  site_visit_date: z.string().optional(),
+  site_visit_location: z.string().optional(),
+  tender_opening_date: z.string().optional(),
+  tender_opening_type: z.string().optional(),
+  approval_authority: z.string().optional(),
+  is_public: z.boolean().default(true),
+})
