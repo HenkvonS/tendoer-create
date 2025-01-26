@@ -5,7 +5,9 @@ import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/use-toast"
 import { useTenderAI } from "@/hooks/use-tender-ai"
+import { useAIPrompts } from "@/hooks/use-ai-prompts"
 import { supabase } from "@/integrations/supabase/client"
+import { AIPromptEditor } from "@/components/tender/AIPromptEditor"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -48,11 +50,19 @@ const formSchema = z.object({
   is_public: z.boolean().default(true),
 })
 
+const TENDER_AI_FIELDS = [
+  'description',
+  'objective',
+  'scope_of_work',
+  'eligibility_criteria'
+] as const;
+
 const CreateTender = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { toast } = useToast()
   const { generateContent, isGenerating } = useTenderAI()
+  const { prompts, isLoading: isLoadingPrompts, refetchPrompts } = useAIPrompts(TENDER_AI_FIELDS)
   const [previewStates, setPreviewStates] = useState({
     description: false,
     objective: false,
@@ -163,16 +173,23 @@ const CreateTender = () => {
   }
 
   const AIButton = ({ field }: { field: string }) => (
-    <Button
-      type="button"
-      variant="outline"
-      size="icon"
-      className="h-8 w-8"
-      disabled={isGenerating}
-      onClick={() => handleAIGenerate(field)}
-    >
-      <Wand2 className="h-4 w-4" />
-    </Button>
+    <div className="flex items-center">
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-8 w-8"
+        disabled={isGenerating}
+        onClick={() => handleAIGenerate(field)}
+      >
+        <Wand2 className="h-4 w-4" />
+      </Button>
+      <AIPromptEditor
+        fieldName={field}
+        currentPrompt={prompts[field] || ""}
+        onPromptUpdate={refetchPrompts}
+      />
+    </div>
   );
 
   return (
