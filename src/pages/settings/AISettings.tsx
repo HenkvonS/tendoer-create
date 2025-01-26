@@ -2,8 +2,6 @@ import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { MarkdownEditor } from "@/components/ui/markdown-editor"
 import {
   Card,
@@ -20,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { MessageSquare, Settings, Terminal } from "lucide-react"
+import { MessageSquare, Settings, Terminal, FileText, Wand2 } from "lucide-react"
 
 interface AIPrompt {
   id: string
@@ -30,6 +28,13 @@ interface AIPrompt {
   created_at: string
   updated_at: string
 }
+
+const TENDER_FIELDS = [
+  'description',
+  'objective',
+  'scope_of_work',
+  'eligibility_criteria'
+];
 
 export default function AISettings() {
   const { toast } = useToast()
@@ -46,6 +51,7 @@ export default function AISettings() {
       const { data, error } = await supabase
         .from("ai_prompts")
         .select("*")
+        .in('field_name', TENDER_FIELDS)
         .order("field_name")
 
       if (error) throw error
@@ -91,11 +97,26 @@ export default function AISettings() {
     }
   }
 
+  const getFieldIcon = (fieldName: string) => {
+    switch (fieldName) {
+      case 'description':
+        return <FileText className="h-4 w-4 text-muted-foreground" />
+      case 'objective':
+        return <MessageSquare className="h-4 w-4 text-muted-foreground" />
+      case 'scope_of_work':
+        return <Terminal className="h-4 w-4 text-muted-foreground" />
+      case 'eligibility_criteria':
+        return <Wand2 className="h-4 w-4 text-muted-foreground" />
+      default:
+        return null
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Settings</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Tender AI Settings</h1>
           <p className="text-muted-foreground">
             Manage AI prompts used in tender creation
           </p>
@@ -115,17 +136,17 @@ export default function AISettings() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
-                AI Prompts
+                Tender Creation Prompts
               </CardTitle>
               <CardDescription>
-                Configure the prompts used to generate tender content using AI
+                Configure the AI prompts used to generate content when creating new tenders
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Field</TableHead>
+                    <TableHead className="w-[200px]">Field</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Prompt Template</TableHead>
                     <TableHead className="w-[100px]">Actions</TableHead>
@@ -134,8 +155,13 @@ export default function AISettings() {
                 <TableBody>
                   {prompts.map((prompt) => (
                     <TableRow key={prompt.id}>
-                      <TableCell className="font-medium capitalize">
-                        {prompt.field_name.replace(/_/g, " ")}
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {getFieldIcon(prompt.field_name)}
+                          <span className="capitalize">
+                            {prompt.field_name.replace(/_/g, " ")}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell>{prompt.description}</TableCell>
                       <TableCell>
