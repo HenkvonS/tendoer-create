@@ -63,12 +63,6 @@ const CreateTender = () => {
   const { toast } = useToast()
   const { generateContent, isGenerating } = useTenderAI()
   const { prompts, isLoading: isLoadingPrompts, refetchPrompts } = useAIPrompts(TENDER_AI_FIELDS)
-  const [previewStates, setPreviewStates] = useState({
-    description: false,
-    objective: false,
-    scope_of_work: false,
-    eligibility_criteria: false,
-  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -165,13 +159,6 @@ const CreateTender = () => {
     }
   };
 
-  const togglePreview = (field: keyof typeof previewStates) => {
-    setPreviewStates(prev => ({
-      ...prev,
-      [field]: !prev[field]
-    }))
-  }
-
   const AIButton = ({ field }: { field: string }) => (
     <div className="flex items-center">
       <Button
@@ -237,8 +224,6 @@ const CreateTender = () => {
                       <FormControl>
                         <MarkdownEditor 
                           placeholder="Enter tender description"
-                          preview={previewStates.description}
-                          onPreviewChange={() => togglePreview('description')}
                           {...field}
                         />
                       </FormControl>
@@ -297,8 +282,6 @@ const CreateTender = () => {
                       <FormControl>
                         <MarkdownEditor 
                           placeholder="Enter tender objective"
-                          preview={previewStates.objective}
-                          onPreviewChange={() => togglePreview('objective')}
                           {...field}
                         />
                       </FormControl>
@@ -319,8 +302,6 @@ const CreateTender = () => {
                       <FormControl>
                         <MarkdownEditor 
                           placeholder="Enter scope of work"
-                          preview={previewStates.scope_of_work}
-                          onPreviewChange={() => togglePreview('scope_of_work')}
                           {...field}
                         />
                       </FormControl>
@@ -341,8 +322,6 @@ const CreateTender = () => {
                       <FormControl>
                         <MarkdownEditor 
                           placeholder="Enter eligibility criteria"
-                          preview={previewStates.eligibility_criteria}
-                          onPreviewChange={() => togglePreview('eligibility_criteria')}
                           {...field}
                         />
                       </FormControl>
