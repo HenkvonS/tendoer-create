@@ -70,28 +70,43 @@ Deno.serve(async (req) => {
     const data = await response.json()
     console.log('SPARQL response:', JSON.stringify(data, null, 2));
 
+    // Extract notice ID from the URI
+    const extractNoticeId = (uri: string) => {
+      const parts = uri.split('/');
+      const lastPart = parts[parts.length - 1];
+      // Remove any non-numeric characters and convert to number
+      const id = parseInt(lastPart.replace(/\D/g, ''));
+      return id;
+    };
+
     const tenders = data.results.bindings.map((binding: any) => ({
-      id: parseInt(binding.notice.value.split('/').pop()),
+      id: extractNoticeId(binding.notice.value),
       title: binding.title.value,
       publication_date: binding.date.value,
       type: 'contract_notice',
       buyer_name: binding.buyer.value,
       buyer_country: binding.country.value,
-      value_amount: binding.value?.value,
+      value_amount: binding.value?.value ? parseFloat(binding.value.value) : null,
       value_currency: binding.currency?.value,
       original_url: binding.notice.value,
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }))
 
-    console.log(`Processing ${tenders.length} tenders`);
+    console.log(`Processing ${tenders.length} tenders:`, tenders);
 
     // Insert or update tenders in the database
     const { error } = await supabaseClient
       .from('ted_tenders')
-      .upsert(tenders, { onConflict: 'id' })
+      .upsert(tenders, { 
+        onConflict: 'id',
+        ignoreDuplicates: false
+      })
 
-    if (error) throw error
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
