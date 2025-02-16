@@ -39,21 +39,19 @@ const TEDTenders = () => {
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      const response = await fetch('/functions/v1/fetch-ted-tenders', {
+      const response = await supabase.functions.invoke('fetch-ted-tenders', {
         method: 'POST'
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to refresh TED tenders');
+      if (response.error) {
+        throw new Error(response.error.message || 'Failed to refresh TED tenders');
       }
       
-      const result = await response.json();
-      
-      if (result.success) {
-        toast.success(result.message);
+      if (response.data.success) {
+        toast.success(response.data.message);
         refetch();
       } else {
-        throw new Error(result.error || 'Failed to refresh TED tenders');
+        throw new Error(response.data.error || 'Failed to refresh TED tenders');
       }
     } catch (error) {
       toast.error(error.message);

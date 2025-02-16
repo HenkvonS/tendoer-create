@@ -4,7 +4,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const SPARQL_ENDPOINT = 'https://ted.europa.eu/api/sparql'
 const BATCH_SIZE = 100
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -72,7 +82,10 @@ Deno.serve(async (req) => {
       success: true, 
       message: `Synced ${tenders.length} tenders`
     }), {
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        ...corsHeaders 
+      }
     })
 
   } catch (error) {
@@ -81,7 +94,10 @@ Deno.serve(async (req) => {
       error: error.message 
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        ...corsHeaders 
+      }
     })
   }
 })
