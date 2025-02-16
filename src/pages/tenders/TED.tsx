@@ -125,8 +125,9 @@ const TEDTenders = () => {
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious 
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
+                  onClick={() => currentPage > 1 && setCurrentPage(p => p - 1)}
+                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  aria-disabled={currentPage === 1}
                 />
               </PaginationItem>
               {[...Array(totalPages)].map((_, i) => (
@@ -141,8 +142,9 @@ const TEDTenders = () => {
               ))}
               <PaginationItem>
                 <PaginationNext 
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
+                  onClick={() => currentPage < totalPages && setCurrentPage(p => p + 1)}
+                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                  aria-disabled={currentPage === totalPages}
                 />
               </PaginationItem>
             </PaginationContent>
