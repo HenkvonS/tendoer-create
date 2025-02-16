@@ -1,7 +1,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search-notices'
+const API_ENDPOINT = 'https://ted.europa.eu/data/api/latest-notices'
 const BATCH_SIZE = 50
 
 const corsHeaders = {
@@ -21,11 +21,13 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Using TED's v3.0 API format
+    // Using TED's data API format
     const queryParams = new URLSearchParams({
-      size: BATCH_SIZE.toString(),
-      page: '0',
-      sort: 'publicationDate,desc'
+      maxRecords: BATCH_SIZE.toString(),
+      offset: '0',
+      fields: 'all',
+      sortField: 'publicationDate',
+      sortOrder: 'desc'
     });
 
     console.log('Making request to TED API endpoint:', `${API_ENDPOINT}?${queryParams}`);
@@ -48,7 +50,7 @@ Deno.serve(async (req) => {
     const data = await response.json()
     console.log('TED API response data:', JSON.stringify(data, null, 2));
 
-    if (!data.notices || !Array.isArray(data.notices) || data.notices.length === 0) {
+    if (!data.records || !Array.isArray(data.records) || data.records.length === 0) {
       console.log('No results found in TED API response');
       return new Response(JSON.stringify({ 
         success: false, 
@@ -61,16 +63,16 @@ Deno.serve(async (req) => {
       })
     }
 
-    const tenders = data.notices.map((notice: any) => ({
-      id: parseInt(notice.id || notice.referenceNumber || Date.now().toString()),
-      title: notice.title || 'Untitled Notice',
-      publication_date: notice.publicationDate,
-      type: notice.type || 'contract_notice',
-      buyer_name: notice.buyerName || 'Unknown',
-      buyer_country: notice.countryOfBuyer || 'EU',
-      value_amount: notice.estimatedValue ? parseFloat(notice.estimatedValue) : null,
-      value_currency: notice.currencyOfValue || null,
-      original_url: notice.uri || null,
+    const tenders = data.records.map((record: any) => ({
+      id: parseInt(record.id || record.noticeNumber || Date.now().toString()),
+      title: record.title || 'Untitled Notice',
+      publication_date: record.publicationDate,
+      type: record.noticeType || 'contract_notice',
+      buyer_name: record.contractingBody?.officialName || 'Unknown',
+      buyer_country: record.contractingBody?.country || 'EU',
+      value_amount: record.mainObject?.estimatedValue ? parseFloat(record.mainObject.estimatedValue) : null,
+      value_currency: record.mainObject?.currency || null,
+      original_url: `https://ted.europa.eu/notice/${record.id}` || null,
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }))
