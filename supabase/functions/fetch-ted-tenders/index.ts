@@ -1,8 +1,8 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// TED API documentation: https://ted.europa.eu/data/api/docs
-const API_ENDPOINT = 'https://ted.europa.eu/data/api/latest-notices'
+// TED SPARQL API endpoint
+const API_ENDPOINT = 'https://ted.europa.eu/api/v3/sparql'
 const BATCH_SIZE = 10
 
 const corsHeaders = {
@@ -21,22 +21,38 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Query parameters based on TED API format
-    const queryParams = new URLSearchParams({
-      maxRecords: BATCH_SIZE.toString(),
-      offset: '0',
-      fields: 'all',
-      sortField: 'publicationDate',
-      sortOrder: 'desc'
-    });
-
-    console.log('Making request to TED API endpoint:', `${API_ENDPOINT}?${queryParams}`);
-    
-    const response = await fetch(`${API_ENDPOINT}?${queryParams}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json'
+    // SPARQL query to get the latest tenders
+    const sparqlQuery = `
+      PREFIX ted: <http://ted.europa.eu/uri/ted#>
+      PREFIX dt: <http://ted.europa.eu/uri/dt#>
+      PREFIX dc: <http://purl.org/dc/elements/1.1/>
+      
+      SELECT DISTINCT ?id ?title ?publicationDate ?buyer ?country ?value ?currency ?description
+      WHERE {
+        ?notice a ted:Notice ;
+                dc:identifier ?id ;
+                dc:title ?title ;
+                ted:publicationDate ?publicationDate ;
+                ted:buyerLegalName ?buyer .
+        OPTIONAL { ?notice ted:countryCode ?country }
+        OPTIONAL { ?notice ted:estimatedValue ?value }
+        OPTIONAL { ?notice ted:currency ?currency }
+        OPTIONAL { ?notice dc:description ?description }
       }
+      ORDER BY DESC(?publicationDate)
+      LIMIT ${BATCH_SIZE}
+    `;
+
+    console.log('Making request to TED SPARQL endpoint:', API_ENDPOINT);
+    console.log('SPARQL Query:', sparqlQuery);
+    
+    const response = await fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/sparql-query',
+        'Accept': 'application/json'
+      },
+      body: sparqlQuery
     })
 
     console.log('Response status:', response.status);
@@ -50,7 +66,7 @@ Deno.serve(async (req) => {
     const data = await response.json()
     console.log('TED API response data:', JSON.stringify(data, null, 2));
 
-    if (!data.records || !Array.isArray(data.records) || data.records.length === 0) {
+    if (!data.results || !Array.isArray(data.results.bindings) || data.results.bindings.length === 0) {
       console.log('No results found in TED API response');
       return new Response(JSON.stringify({ 
         success: false, 
@@ -63,22 +79,28 @@ Deno.serve(async (req) => {
       })
     }
 
-    const tenders = data.records.map((record: any) => ({
-      id: parseInt(record.id || record.noticeNumber || Date.now().toString()),
-      title: record.title || 'Untitled Notice',
-      publication_date: record.publicationDate,
-      type: record.noticeType || 'contract_notice',
-      buyer_name: record.contractingBody?.officialName || 'Unknown',
-      buyer_country: record.contractingBody?.country || 'EU',
-      value_amount: record.mainObject?.estimatedValue ? parseFloat(record.mainObject.estimatedValue) : null,
-      value_currency: record.mainObject?.currency || null,
-      original_url: `https://ted.europa.eu/notice/${record.id}` || null,
-      description: record.description || null,
-      cpv_codes: record.cpvCodes || [],
-      reference_number: record.referenceNumber || null,
-      sync_status: 'synced',
-      last_sync_attempt: new Date().toISOString()
-    }))
+    const tenders = data.results.bindings.map((binding: any) => {
+      // Extract the ID from the URI
+      const idMatch = binding.id?.value.match(/\d+$/) || [Date.now().toString()];
+      const id = parseInt(idMatch[0]);
+      
+      return {
+        id,
+        title: binding.title?.value || 'Untitled Notice',
+        publication_date: binding.publicationDate?.value || new Date().toISOString(),
+        type: 'contract_notice',
+        buyer_name: binding.buyer?.value || 'Unknown',
+        buyer_country: binding.country?.value || 'EU',
+        value_amount: binding.value?.value ? parseFloat(binding.value.value) : null,
+        value_currency: binding.currency?.value || null,
+        original_url: `https://ted.europa.eu/udl?uri=TED:NOTICE:${id}:TEXT:EN:HTML`,
+        description: binding.description?.value || null,
+        cpv_codes: [],
+        reference_number: id.toString(),
+        sync_status: 'synced',
+        last_sync_attempt: new Date().toISOString()
+      }
+    });
 
     console.log(`Processing ${tenders.length} tenders:`, JSON.stringify(tenders, null, 2));
 
