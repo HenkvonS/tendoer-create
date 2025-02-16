@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ const EditTender = () => {
   const [content, setContent] = useState("");
   const [isPreview, setIsPreview] = useState(false);
 
+  // Early validation of ID
   useEffect(() => {
     if (!id || id === "undefined") {
       toast.error("Invalid tender ID");
@@ -32,7 +34,7 @@ const EditTender = () => {
 
       const { data, error } = await supabase
         .from("tenders")
-        .select()
+        .select("*")
         .eq("id", id)
         .maybeSingle();
 
