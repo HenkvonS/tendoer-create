@@ -7,17 +7,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { RefreshCw, Globe } from "lucide-react";
 import { useState } from "react";
+import { 
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const PAGE_SIZE = 10;
 
 const TEDTenders = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: tenders = [], isLoading, refetch } = useQuery({
-    queryKey: ['ted-tenders'],
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ['ted-tenders', currentPage],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const end = start + PAGE_SIZE - 1;
+
+      const { data, error, count } = await supabase
         .from('ted_tenders')
-        .select('*')
-        .order('publication_date', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('publication_date', { ascending: false })
+        .range(start, end);
 
       if (error) {
         console.error('Supabase query error:', error);
@@ -26,20 +41,25 @@ const TEDTenders = () => {
 
       console.log('Fetched tenders:', data);
 
-      return data?.map(tender => ({
-        id: tender.id.toString(),
-        title: tender.title,
-        organization: tender.buyer_name || 'Unknown',
-        deadline: new Date(tender.publication_date).toLocaleDateString(),
-        status: 'active' as const,
-        budget: tender.value_amount ? 
-          `${tender.value_amount} ${tender.value_currency}` : 
-          'Not specified',
-        source: 'ted' as const,
-        country: tender.buyer_country
-      })) || [];
+      return {
+        tenders: data?.map(tender => ({
+          id: tender.id.toString(),
+          title: tender.title,
+          organization: tender.buyer_name || 'Unknown',
+          deadline: new Date(tender.publication_date).toLocaleDateString(),
+          status: 'active' as const,
+          budget: tender.value_amount ? 
+            `${tender.value_amount} ${tender.value_currency}` : 
+            'Not specified',
+          source: 'ted' as const,
+          country: tender.buyer_country
+        })) || [],
+        totalCount: count || 0
+      };
     }
   });
+
+  const totalPages = Math.ceil((data?.totalCount || 0) / PAGE_SIZE);
 
   const handleRefresh = async () => {
     try {
@@ -73,28 +93,61 @@ const TEDTenders = () => {
           <Globe className="h-6 w-6 text-blue-500" />
           <h1 className="text-2xl font-bold">TED Tenders</h1>
         </div>
-        <Button 
-          onClick={handleRefresh} 
-          disabled={isRefreshing}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          Refresh Tenders
-        </Button>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {data?.tenders.length || 0} of {data?.totalCount || 0} tenders
+          </p>
+          <Button 
+            onClick={handleRefresh} 
+            disabled={isRefreshing}
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            Refresh Tenders
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
         <div className="space-y-4">
           <Skeleton className="h-[400px] w-full" />
         </div>
-      ) : tenders.length === 0 ? (
+      ) : data?.tenders.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           No tenders found. Click refresh to fetch the latest tenders.
         </div>
       ) : (
-        <TenderList 
-          tenders={tenders}
-        />
+        <>
+          <TenderList 
+            tenders={data?.tenders || []}
+          />
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                />
+              </PaginationItem>
+              {[...Array(totalPages)].map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </>
       )}
     </div>
   );
