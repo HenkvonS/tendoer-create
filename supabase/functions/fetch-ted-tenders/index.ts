@@ -1,8 +1,8 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const SPARQL_ENDPOINT = 'https://publications.europa.eu/webapi/rdf/sparql'
-const BATCH_SIZE = 10 // Reduced for testing
+const SPARQL_ENDPOINT = 'https://ted.europa.eu/api/v3/sparql'
+const BATCH_SIZE = 50
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,16 +21,24 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Simplified query for testing
+    // Using TED's SPARQL endpoint format
     const sparqlQuery = `
-      PREFIX epo: <http://data.europa.eu/a4g/ontology#>
+      PREFIX ted: <http://ted.europa.eu/ted#>
       PREFIX dc: <http://purl.org/dc/elements/1.1/>
       
-      SELECT ?notice ?title
+      SELECT DISTINCT ?notice ?title ?date ?buyer ?value ?currency
       WHERE {
-        ?notice a epo:Contract ;
-                dc:title ?title .
+        ?notice a ted:Notice ;
+                dc:title ?title ;
+                ted:publicationDate ?date ;
+                ted:businessParty ?buyer .
+                
+        OPTIONAL {
+          ?notice ted:estimatedValue ?value .
+          ?notice ted:currency ?currency .
+        }
       }
+      ORDER BY DESC(?date)
       LIMIT ${BATCH_SIZE}
     `
 
@@ -73,18 +81,18 @@ Deno.serve(async (req) => {
     const tenders = data.results.bindings.map((binding: any) => ({
       id: parseInt(binding.notice.value.split('/').pop().replace(/\D/g, '')),
       title: binding.title.value,
-      publication_date: new Date().toISOString(), // Temporary for testing
+      publication_date: binding.date.value,
       type: 'contract_notice',
-      buyer_name: 'Test Buyer', // Temporary for testing
-      buyer_country: 'EU', // Temporary for testing
-      value_amount: null,
-      value_currency: null,
+      buyer_name: binding.buyer.value,
+      buyer_country: 'EU', // Default value as country might not be directly available
+      value_amount: binding.value?.value ? parseFloat(binding.value.value) : null,
+      value_currency: binding.currency?.value,
       original_url: binding.notice.value,
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }))
 
-    console.log(`Processing ${tenders.length} test tenders:`, JSON.stringify(tenders, null, 2));
+    console.log(`Processing ${tenders.length} tenders:`, JSON.stringify(tenders, null, 2));
 
     // Insert or update tenders in the database
     const { error } = await supabaseClient
@@ -101,7 +109,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `Synced ${tenders.length} test tenders`
+      message: `Synced ${tenders.length} tenders`
     }), {
       headers: { 
         'Content-Type': 'application/json',

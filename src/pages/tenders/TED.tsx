@@ -11,7 +11,7 @@ import { useState } from "react";
 const TEDTenders = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: tenders, isLoading, refetch } = useQuery({
+  const { data: tenders = [], isLoading, refetch } = useQuery({
     queryKey: ['ted-tenders'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -19,9 +19,14 @@ const TEDTenders = () => {
         .select('*')
         .order('publication_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase query error:', error);
+        throw error;
+      }
 
-      return data.map(tender => ({
+      console.log('Fetched tenders:', data);
+
+      return data?.map(tender => ({
         id: tender.id.toString(),
         title: tender.title,
         organization: tender.buyer_name || 'Unknown',
@@ -32,16 +37,16 @@ const TEDTenders = () => {
           'Not specified',
         source: 'ted' as const,
         country: tender.buyer_country
-      }));
+      })) || [];
     }
   });
 
   const handleRefresh = async () => {
     try {
       setIsRefreshing(true);
-      const response = await supabase.functions.invoke('fetch-ted-tenders', {
-        method: 'POST'
-      });
+      const response = await supabase.functions.invoke('fetch-ted-tenders');
+      
+      console.log('Refresh response:', response);
       
       if (response.error) {
         throw new Error(response.error.message || 'Failed to refresh TED tenders');
@@ -49,13 +54,13 @@ const TEDTenders = () => {
       
       if (response.data.success) {
         toast.success(response.data.message);
-        refetch();
+        await refetch();
       } else {
         throw new Error(response.data.error || 'Failed to refresh TED tenders');
       }
     } catch (error) {
-      toast.error(error.message);
       console.error('Refresh error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to refresh tenders');
     } finally {
       setIsRefreshing(false);
     }
@@ -82,9 +87,13 @@ const TEDTenders = () => {
         <div className="space-y-4">
           <Skeleton className="h-[400px] w-full" />
         </div>
+      ) : tenders.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          No tenders found. Click refresh to fetch the latest tenders.
+        </div>
       ) : (
         <TenderList 
-          tenders={tenders || []}
+          tenders={tenders}
         />
       )}
     </div>
