@@ -179,6 +179,66 @@ export type Database = {
           },
         ]
       }
+      ted_tenders: {
+        Row: {
+          buyer_country: string | null
+          buyer_name: string | null
+          cpv_codes: string[] | null
+          created_at: string | null
+          description: string | null
+          id: number
+          last_sync_attempt: string | null
+          original_url: string | null
+          publication_date: string
+          reference_number: string | null
+          sync_status: string | null
+          title: string
+          type: Database["public"]["Enums"]["ted_tender_type"]
+          updated_at: string | null
+          value_amount: number | null
+          value_currency: string | null
+          xml_data: Json | null
+        }
+        Insert: {
+          buyer_country?: string | null
+          buyer_name?: string | null
+          cpv_codes?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          id: number
+          last_sync_attempt?: string | null
+          original_url?: string | null
+          publication_date: string
+          reference_number?: string | null
+          sync_status?: string | null
+          title: string
+          type: Database["public"]["Enums"]["ted_tender_type"]
+          updated_at?: string | null
+          value_amount?: number | null
+          value_currency?: string | null
+          xml_data?: Json | null
+        }
+        Update: {
+          buyer_country?: string | null
+          buyer_name?: string | null
+          cpv_codes?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          last_sync_attempt?: string | null
+          original_url?: string | null
+          publication_date?: string
+          reference_number?: string | null
+          sync_status?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["ted_tender_type"]
+          updated_at?: string | null
+          value_amount?: number | null
+          value_currency?: string | null
+          xml_data?: Json | null
+        }
+        Relationships: []
+      }
       tenders: {
         Row: {
           approval_authority: string | null
@@ -321,6 +381,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      ted_tender_type:
+        | "contract_notice"
+        | "contract_award"
+        | "prior_information"
+        | "modification"
     }
     CompositeTypes: {
       [_ in never]: never

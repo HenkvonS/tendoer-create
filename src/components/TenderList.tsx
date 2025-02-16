@@ -1,6 +1,7 @@
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, Building2, FileText, ArrowUp, ArrowDown } from "lucide-react";
+import { CalendarDays, Building2, FileText, ArrowUp, ArrowDown, Globe } from "lucide-react";
 import { SortConfig } from "@/utils/sortTenders";
 import { useNavigate } from "react-router-dom";
 
@@ -12,6 +13,8 @@ interface TenderListProps {
     deadline: string;
     status: "draft" | "active" | "closed";
     budget: string;
+    source?: "local" | "ted";
+    country?: string;
   }[];
   sortConfig?: SortConfig;
   onSort?: (field: SortConfig["field"]) => void;
@@ -35,8 +38,12 @@ const TenderList = ({ tenders, sortConfig, onSort }: TenderListProps) => {
     );
   };
 
-  const handleRowClick = (id: string) => {
-    navigate(`/tenders/edit/${id}`);
+  const handleRowClick = (id: string, source: string) => {
+    if (source === 'ted') {
+      window.open(`https://ted.europa.eu/udl?uri=TED:NOTICE:${id}`, '_blank');
+    } else {
+      navigate(`/tenders/edit/${id}`);
+    }
   };
 
   return (
@@ -81,13 +88,25 @@ const TenderList = ({ tenders, sortConfig, onSort }: TenderListProps) => {
             <TableRow 
               key={tender.id} 
               className="group cursor-pointer hover:bg-muted/50"
-              onClick={() => handleRowClick(tender.id)}
+              onClick={() => handleRowClick(tender.id, tender.source || 'local')}
             >
-              <TableCell className="font-medium">{tender.title}</TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-2">
+                  {tender.source === 'ted' && (
+                    <Globe className="h-4 w-4 text-blue-500" />
+                  )}
+                  {tender.title}
+                </div>
+              </TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Building2 className="h-4 w-4 text-muted-foreground" />
                   {tender.organization}
+                  {tender.country && (
+                    <span className="text-xs text-muted-foreground">
+                      ({tender.country})
+                    </span>
+                  )}
                 </div>
               </TableCell>
               <TableCell>

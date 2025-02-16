@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import TenderList from "@/components/TenderList";
 import StatsCard from "@/components/StatsCard";
 import { Search, FileText, Users, TrendingUp, AlertCircle, LayoutGrid, List } from "lucide-react";
 import { sortTenders, SortConfig } from "@/utils/sortTenders";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const Index = () => {
   const { t } = useTranslation();
@@ -22,7 +24,7 @@ const Index = () => {
     order: "desc",
   });
 
-  const tenders = [
+  const localTenders = [
     {
       title: "IT Infrastructure Upgrade",
       organization: "Ministry of Technology",
@@ -130,21 +132,43 @@ const Index = () => {
     }
   ];
 
-  // Get unique organizations for the filter
-  const organizations = Array.from(new Set(tenders.map(tender => tender.organization)));
+  const { data: tedTenders = [] } = useQuery({
+    queryKey: ['ted-tenders'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ted_tenders')
+        .select('*')
+        .order('publication_date', { ascending: false })
+        .limit(50);
 
-  // Filter tenders based on search query, status, and organization
-  const filteredTenders = tenders.filter(tender => {
+      if (error) throw error;
+
+      return data.map(tender => ({
+        id: tender.id.toString(),
+        title: tender.title,
+        organization: tender.buyer_name,
+        deadline: new Date(tender.publication_date).toLocaleDateString(),
+        status: 'active' as const,
+        budget: tender.value_amount ? 
+          `${tender.value_amount} ${tender.value_currency}` : 
+          'Not specified',
+        source: 'ted' as const,
+        country: tender.buyer_country
+      }));
+    }
+  });
+
+  const allTenders = [...localTenders, ...(tedTenders || [])];
+  
+  const filteredTenders = allTenders.filter(tender => {
     const matchesSearch = tender.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || tender.status === statusFilter;
     const matchesOrg = organizationFilter === "all" || tender.organization === organizationFilter;
     return matchesSearch && matchesStatus && matchesOrg;
   });
 
-  // Sort the filtered tenders
   const sortedTenders = sortTenders(filteredTenders, sortConfig);
 
-  // Calculate stats based on filtered tenders
   const activeTenders = sortedTenders.filter(t => t.status === "active").length;
 
   const handleSort = (field: SortConfig["field"]) => {
@@ -153,6 +177,8 @@ const Index = () => {
       order: current.field === field && current.order === "asc" ? "desc" : "asc",
     }));
   };
+
+  const organizations = Array.from(new Set(allTenders.map(tender => tender.organization)));
 
   return (
     <div className="space-y-6">
