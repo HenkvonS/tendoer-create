@@ -2,7 +2,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const SPARQL_ENDPOINT = 'https://publications.europa.eu/webapi/rdf/sparql'
-const BATCH_SIZE = 100
+const BATCH_SIZE = 10 // Reduced for testing
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,36 +21,21 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Query recent tender notices using the Publications Office ontology
+    // Simplified query for testing
     const sparqlQuery = `
       PREFIX epo: <http://data.europa.eu/a4g/ontology#>
       PREFIX dc: <http://purl.org/dc/elements/1.1/>
-      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
       
-      SELECT DISTINCT ?notice ?title ?date ?buyer ?country ?value ?currency
+      SELECT ?notice ?title
       WHERE {
         ?notice a epo:Contract ;
-                dc:title ?title ;
-                epo:publicationDate ?date ;
-                epo:buyer ?buyerNode .
-        
-        ?buyerNode epo:name ?buyer ;
-                   epo:country ?countryNode .
-        ?countryNode epo:code ?country .
-        
-        OPTIONAL {
-          ?notice epo:estimatedValue ?valueNode .
-          ?valueNode epo:amount ?value ;
-                    epo:currency ?currency .
-        }
-        
-        FILTER(?date >= "2024-01-01"^^xsd:date)
+                dc:title ?title .
       }
-      ORDER BY DESC(?date)
       LIMIT ${BATCH_SIZE}
     `
 
-    console.log('Querying SPARQL endpoint:', SPARQL_ENDPOINT);
+    console.log('Making request to SPARQL endpoint:', SPARQL_ENDPOINT);
+    console.log('Query:', sparqlQuery);
     
     const response = await fetch(SPARQL_ENDPOINT, {
       method: 'POST',
@@ -61,39 +46,45 @@ Deno.serve(async (req) => {
       body: `query=${encodeURIComponent(sparqlQuery)}`
     })
 
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
-      console.error('SPARQL response status:', response.status);
-      console.error('SPARQL response text:', await response.text());
-      throw new Error(`SPARQL query failed: ${response.statusText}`)
+      const errorText = await response.text();
+      console.error('SPARQL error response:', errorText);
+      throw new Error(`SPARQL query failed: ${response.statusText}. Response: ${errorText}`)
     }
 
     const data = await response.json()
-    console.log('SPARQL response:', JSON.stringify(data, null, 2));
+    console.log('SPARQL response data:', JSON.stringify(data, null, 2));
 
-    // Extract notice ID from the URI
-    const extractNoticeId = (uri: string) => {
-      const parts = uri.split('/');
-      const lastPart = parts[parts.length - 1];
-      // Remove any non-numeric characters and convert to number
-      const id = parseInt(lastPart.replace(/\D/g, ''));
-      return id;
-    };
+    if (!data.results || !data.results.bindings || data.results.bindings.length === 0) {
+      console.log('No results found in SPARQL response');
+      return new Response(JSON.stringify({ 
+        success: false, 
+        message: 'No tenders found in SPARQL response'
+      }), {
+        headers: { 
+          'Content-Type': 'application/json',
+          ...corsHeaders 
+        }
+      })
+    }
 
     const tenders = data.results.bindings.map((binding: any) => ({
-      id: extractNoticeId(binding.notice.value),
+      id: parseInt(binding.notice.value.split('/').pop().replace(/\D/g, '')),
       title: binding.title.value,
-      publication_date: binding.date.value,
+      publication_date: new Date().toISOString(), // Temporary for testing
       type: 'contract_notice',
-      buyer_name: binding.buyer.value,
-      buyer_country: binding.country.value,
-      value_amount: binding.value?.value ? parseFloat(binding.value.value) : null,
-      value_currency: binding.currency?.value,
+      buyer_name: 'Test Buyer', // Temporary for testing
+      buyer_country: 'EU', // Temporary for testing
+      value_amount: null,
+      value_currency: null,
       original_url: binding.notice.value,
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }))
 
-    console.log(`Processing ${tenders.length} tenders:`, tenders);
+    console.log(`Processing ${tenders.length} test tenders:`, JSON.stringify(tenders, null, 2));
 
     // Insert or update tenders in the database
     const { error } = await supabaseClient
@@ -104,13 +95,13 @@ Deno.serve(async (req) => {
       })
 
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('Supabase insert error:', error);
       throw error;
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `Synced ${tenders.length} tenders`
+      message: `Synced ${tenders.length} test tenders`
     }), {
       headers: { 
         'Content-Type': 'application/json',
