@@ -1,7 +1,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const SPARQL_ENDPOINT = 'https://ted.europa.eu/api/sparql'
+const SPARQL_ENDPOINT = 'https://data.europa.eu/api/hub/sparql'
 const BATCH_SIZE = 100
 
 const corsHeaders = {
@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
 
     // Query recent tender notices
     const sparqlQuery = `
-      PREFIX ted: <http://ted.europa.eu/ted#>
+      PREFIX ted: <http://data.europa.eu/ted#>
       PREFIX dc: <http://purl.org/dc/elements/1.1/>
       SELECT DISTINCT ?notice ?title ?date ?buyer ?country ?value ?currency
       WHERE {
@@ -38,11 +38,14 @@ Deno.serve(async (req) => {
           ?valueNode ted:amount ?value ;
                      ted:currency ?currency .
         }
+        FILTER(?date >= "2024-01-01"^^xsd:date)
       }
       ORDER BY DESC(?date)
       LIMIT ${BATCH_SIZE}
     `
 
+    console.log('Querying SPARQL endpoint:', SPARQL_ENDPOINT);
+    
     const response = await fetch(SPARQL_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -53,10 +56,14 @@ Deno.serve(async (req) => {
     })
 
     if (!response.ok) {
+      console.error('SPARQL response status:', response.status);
+      console.error('SPARQL response text:', await response.text());
       throw new Error(`SPARQL query failed: ${response.statusText}`)
     }
 
     const data = await response.json()
+    console.log('SPARQL response:', JSON.stringify(data, null, 2));
+
     const tenders = data.results.bindings.map((binding: any) => ({
       id: parseInt(binding.notice.value.split('/').pop()),
       title: binding.title.value,
@@ -70,6 +77,8 @@ Deno.serve(async (req) => {
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }))
+
+    console.log(`Processing ${tenders.length} tenders`);
 
     // Insert or update tenders in the database
     const { error } = await supabaseClient
@@ -89,6 +98,7 @@ Deno.serve(async (req) => {
     })
 
   } catch (error) {
+    console.error('Error in fetch-ted-tenders:', error);
     return new Response(JSON.stringify({ 
       success: false, 
       error: error.message 
