@@ -1,0 +1,96 @@
+
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import TenderList from "@/components/TenderList";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { RefreshCw, Globe } from "lucide-react";
+import { useState } from "react";
+
+const TEDTenders = () => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const { data: tenders, isLoading, refetch } = useQuery({
+    queryKey: ['ted-tenders'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ted_tenders')
+        .select('*')
+        .order('publication_date', { ascending: false });
+
+      if (error) throw error;
+
+      return data.map(tender => ({
+        id: tender.id.toString(),
+        title: tender.title,
+        organization: tender.buyer_name || 'Unknown',
+        deadline: new Date(tender.publication_date).toLocaleDateString(),
+        status: 'active' as const,
+        budget: tender.value_amount ? 
+          `${tender.value_amount} ${tender.value_currency}` : 
+          'Not specified',
+        source: 'ted' as const,
+        country: tender.buyer_country
+      }));
+    }
+  });
+
+  const handleRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      const response = await fetch('/functions/v1/fetch-ted-tenders', {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to refresh TED tenders');
+      }
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success(result.message);
+        refetch();
+      } else {
+        throw new Error(result.error || 'Failed to refresh TED tenders');
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.error('Refresh error:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Globe className="h-6 w-6 text-blue-500" />
+          <h1 className="text-2xl font-bold">TED Tenders</h1>
+        </div>
+        <Button 
+          onClick={handleRefresh} 
+          disabled={isRefreshing}
+          className="gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          Refresh Tenders
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      ) : (
+        <TenderList 
+          tenders={tenders || []}
+        />
+      )}
+    </div>
+  );
+};
+
+export default TEDTenders;
