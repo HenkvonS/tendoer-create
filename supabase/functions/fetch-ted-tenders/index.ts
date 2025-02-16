@@ -1,7 +1,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const SPARQL_ENDPOINT = 'https://data.europa.eu/api/hub/sparql'
+const SPARQL_ENDPOINT = 'https://publications.europa.eu/webapi/rdf/sparql'
 const BATCH_SIZE = 100
 
 const corsHeaders = {
@@ -21,23 +21,29 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Query recent tender notices
+    // Query recent tender notices using the Publications Office ontology
     const sparqlQuery = `
-      PREFIX ted: <http://data.europa.eu/ted#>
+      PREFIX epo: <http://data.europa.eu/a4g/ontology#>
       PREFIX dc: <http://purl.org/dc/elements/1.1/>
+      PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+      
       SELECT DISTINCT ?notice ?title ?date ?buyer ?country ?value ?currency
       WHERE {
-        ?notice a ted:Notice ;
+        ?notice a epo:Contract ;
                 dc:title ?title ;
-                ted:publicationDate ?date ;
-                ted:buyer ?buyerNode .
-        ?buyerNode ted:name ?buyer ;
-                   ted:countryCode ?country .
+                epo:publicationDate ?date ;
+                epo:buyer ?buyerNode .
+        
+        ?buyerNode epo:name ?buyer ;
+                   epo:country ?countryNode .
+        ?countryNode epo:code ?country .
+        
         OPTIONAL {
-          ?notice ted:estimatedValue ?valueNode .
-          ?valueNode ted:amount ?value ;
-                     ted:currency ?currency .
+          ?notice epo:estimatedValue ?valueNode .
+          ?valueNode epo:amount ?value ;
+                    epo:currency ?currency .
         }
+        
         FILTER(?date >= "2024-01-01"^^xsd:date)
       }
       ORDER BY DESC(?date)
