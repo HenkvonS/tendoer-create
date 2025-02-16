@@ -1,7 +1,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const API_ENDPOINT = 'https://ted.europa.eu/udl'
+const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search'
 const BATCH_SIZE = 50
 
 const corsHeaders = {
@@ -21,15 +21,11 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Using TED's REST API format
+    // Using TED's v3.0 API format
     const queryParams = new URLSearchParams({
-      pageSize: BATCH_SIZE.toString(),
-      pageNum: '1',
-      scope: 'all', // Get all types of notices
-      fields: 'all', // Get all available fields
-      sortField: 'publicationDate',
-      sortType: 'desc',
-      format: 'json'
+      size: BATCH_SIZE.toString(),
+      page: '0',
+      sort: 'publicationDate,desc'
     });
 
     console.log('Making request to TED API endpoint:', `${API_ENDPOINT}?${queryParams}`);
@@ -52,7 +48,7 @@ Deno.serve(async (req) => {
     const data = await response.json()
     console.log('TED API response data:', JSON.stringify(data, null, 2));
 
-    if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
+    if (!data.notices || !Array.isArray(data.notices) || data.notices.length === 0) {
       console.log('No results found in TED API response');
       return new Response(JSON.stringify({ 
         success: false, 
@@ -65,16 +61,16 @@ Deno.serve(async (req) => {
       })
     }
 
-    const tenders = data.results.map((tender: any) => ({
-      id: parseInt(tender.id || tender.referenceNumber || Date.now().toString()),
-      title: tender.title,
-      publication_date: tender.publicationDate,
-      type: 'contract_notice',
-      buyer_name: tender.buyer?.name || 'Unknown',
-      buyer_country: tender.buyer?.country || 'EU',
-      value_amount: tender.value?.amount ? parseFloat(tender.value.amount) : null,
-      value_currency: tender.value?.currency || null,
-      original_url: tender.documentUrl || null,
+    const tenders = data.notices.map((notice: any) => ({
+      id: parseInt(notice.id || notice.referenceNumber || Date.now().toString()),
+      title: notice.title || 'Untitled Notice',
+      publication_date: notice.publicationDate,
+      type: notice.type || 'contract_notice',
+      buyer_name: notice.buyerName || 'Unknown',
+      buyer_country: notice.countryOfBuyer || 'EU',
+      value_amount: notice.estimatedValue ? parseFloat(notice.estimatedValue) : null,
+      value_currency: notice.currencyOfValue || null,
+      original_url: notice.uri || null,
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }))
