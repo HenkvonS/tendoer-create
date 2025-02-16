@@ -1,7 +1,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search'
+const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search-notices'
 const BATCH_SIZE = 50
 
 const corsHeaders = {
