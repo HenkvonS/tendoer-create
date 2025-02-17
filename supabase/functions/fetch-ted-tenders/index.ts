@@ -2,7 +2,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 // Using TED's newer API version
-const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search-notices'
+const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search'
 const BATCH_SIZE = 10
 
 const corsHeaders = {
@@ -21,17 +21,22 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    const apiKey = Deno.env.get('TED_API_KEY')
+    if (!apiKey) {
+      throw new Error('TED API key not configured')
+    }
+
     // Query parameters for the TED API
     const queryBody = {
-      scope: "active",
+      apiKey,
+      fields: ["all"],
       pageSize: BATCH_SIZE,
       sortField: "publicationDate",
-      sortOrder: "desc",
-      fields: ["all"]
+      sortOrder: "desc"
     };
 
     console.log('Making request to TED API endpoint:', API_ENDPOINT);
-    console.log('Query body:', JSON.stringify(queryBody, null, 2));
+    console.log('Query body:', JSON.stringify({...queryBody, apiKey: '***'}));
     
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
@@ -53,7 +58,7 @@ Deno.serve(async (req) => {
     const data = await response.json()
     console.log('TED API response data:', JSON.stringify(data, null, 2));
 
-    if (!data.notices || !Array.isArray(data.notices) || data.notices.length === 0) {
+    if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
       console.log('No results found in TED API response');
       return new Response(JSON.stringify({ 
         success: false, 
@@ -66,7 +71,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    const tenders = data.notices.map((notice: any) => ({
+    const tenders = data.results.map((notice: any) => ({
       id: parseInt(notice.id || notice.noticeNumber || Date.now().toString()),
       title: notice.title || 'Untitled Notice',
       publication_date: notice.publicationDate || new Date().toISOString(),
