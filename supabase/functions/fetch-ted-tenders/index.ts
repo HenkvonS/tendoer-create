@@ -1,7 +1,6 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// Using TED's newer API version
 const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search'
 const BATCH_SIZE = 10
 
@@ -31,12 +30,12 @@ Deno.serve(async (req) => {
       apiKey,
       fields: ["all"],
       pageSize: BATCH_SIZE,
+      q: "PC=[320*]", // Adding a basic query to filter IT-related tenders
       sortField: "publicationDate",
       sortOrder: "desc"
     };
 
     console.log('Making request to TED API endpoint:', API_ENDPOINT);
-    console.log('Query body:', JSON.stringify({...queryBody, apiKey: '***'}));
     
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
@@ -47,16 +46,16 @@ Deno.serve(async (req) => {
       body: JSON.stringify(queryBody)
     })
 
-    console.log('Response status:', response.status);
-    
     if (!response.ok) {
       const errorText = await response.text();
       console.error('TED API error response:', errorText);
-      throw new Error(`TED API query failed: ${response.statusText}. Response: ${errorText}`)
+      console.error('Response status:', response.status);
+      console.error('Response status text:', response.statusText);
+      throw new Error(`TED API query failed with status ${response.status}: ${errorText}`)
     }
 
     const data = await response.json()
-    console.log('TED API response data:', JSON.stringify(data, null, 2));
+    console.log('TED API response received');
 
     if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
       console.log('No results found in TED API response');
@@ -70,6 +69,8 @@ Deno.serve(async (req) => {
         }
       })
     }
+
+    console.log(`Found ${data.results.length} tenders`);
 
     const tenders = data.results.map((notice: any) => ({
       id: parseInt(notice.id || notice.noticeNumber || Date.now().toString()),
@@ -88,23 +89,21 @@ Deno.serve(async (req) => {
       last_sync_attempt: new Date().toISOString()
     }));
 
-    console.log(`Processing ${tenders.length} tenders:`, JSON.stringify(tenders, null, 2));
-
-    const { error } = await supabaseClient
+    const { error: upsertError } = await supabaseClient
       .from('ted_tenders')
       .upsert(tenders, { 
         onConflict: 'id',
         ignoreDuplicates: false
       })
 
-    if (error) {
-      console.error('Supabase insert error:', error);
-      throw error;
+    if (upsertError) {
+      console.error('Supabase insert error:', upsertError);
+      throw upsertError;
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
-      message: `Synced ${tenders.length} tenders`
+      message: `Successfully synced ${tenders.length} tenders`
     }), {
       headers: { 
         'Content-Type': 'application/json',
