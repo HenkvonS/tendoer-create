@@ -43,7 +43,7 @@ const TEDTenders = () => {
 
       return {
         tenders: data?.map(tender => ({
-          id: tender.id.toString(),
+          id: tender.id.toString(), // Convert numeric ID to string
           title: tender.title,
           organization: tender.buyer_name || 'Unknown',
           deadline: new Date(tender.publication_date).toLocaleDateString(),

@@ -1,7 +1,8 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search-notices'  // Updated endpoint
+// Updated to v2.0.9 endpoint
+const API_ENDPOINT = 'https://ted.europa.eu/api/v2.0.9/notices'
 const BATCH_SIZE = 10
 
 const corsHeaders = {
@@ -25,26 +26,22 @@ Deno.serve(async (req) => {
       throw new Error('TED API key not configured')
     }
 
-    // Query parameters for the TED API
-    const queryBody = {
-      apiKey,
-      fields: ["CONTENT"],  // Updated to match curl example
-      q: "PC=[320*]",
-      pageSize: BATCH_SIZE,
-      sortField: "publicationDate",
-      sortOrder: "desc"
-    };
+    // Query parameters for v2.0.9 API
+    const params = new URLSearchParams({
+      api_key: apiKey,
+      fields: 'all',
+      page_size: BATCH_SIZE.toString(),
+      scope: 'active',
+      order_by: '-publication_date'
+    });
 
-    console.log('Making request to TED API endpoint:', API_ENDPOINT);
-    console.log('Query parameters:', { ...queryBody, apiKey: '[REDACTED]' });
+    console.log('Making request to TED API endpoint:', `${API_ENDPOINT}?${params.toString().replace(apiKey, '[REDACTED]')}`);
     
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
+    const response = await fetch(`${API_ENDPOINT}?${params.toString()}`, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json'
-      },
-      body: JSON.stringify(queryBody)
+      }
     })
 
     if (!response.ok) {
@@ -58,8 +55,8 @@ Deno.serve(async (req) => {
     const data = await response.json()
     console.log('TED API response received');
 
-    if (!data.results || !Array.isArray(data.results) || data.results.length === 0) {
-      console.log('No results found in TED API response');
+    if (!data.notices || !Array.isArray(data.notices) || data.notices.length === 0) {
+      console.log('No notices found in TED API response');
       return new Response(JSON.stringify({ 
         success: false, 
         message: 'No tenders found in TED API response'
@@ -71,21 +68,21 @@ Deno.serve(async (req) => {
       })
     }
 
-    console.log(`Found ${data.results.length} tenders`);
+    console.log(`Found ${data.notices.length} tenders`);
 
-    const tenders = data.results.map((notice: any) => ({
-      id: parseInt(notice.id || notice.noticeNumber || Date.now().toString()),
+    const tenders = data.notices.map((notice: any) => ({
+      id: notice.id ? parseInt(notice.id) : Date.now(),
       title: notice.title || 'Untitled Notice',
-      publication_date: notice.publicationDate || new Date().toISOString(),
+      publication_date: notice.publication_date || new Date().toISOString(),
       type: 'contract_notice',
-      buyer_name: notice.buyerInformation?.officialName || 'Unknown',
-      buyer_country: notice.buyerInformation?.country || 'EU',
-      value_amount: notice.values?.estimatedValue ? parseFloat(notice.values.estimatedValue) : null,
-      value_currency: notice.values?.currency || null,
-      original_url: notice.tedUrl || `https://ted.europa.eu/udl?uri=TED:NOTICE:${notice.id}:TEXT:EN:HTML`,
-      description: notice.shortDescription || null,
-      cpv_codes: notice.cpvCodes || [],
-      reference_number: notice.referenceNumber || notice.id?.toString(),
+      buyer_name: notice.contracting_body?.name || 'Unknown',
+      buyer_country: notice.contracting_body?.country || 'EU',
+      value_amount: notice.value?.amount ? parseFloat(notice.value.amount) : null,
+      value_currency: notice.value?.currency || null,
+      original_url: notice.uri || null,
+      description: notice.description || null,
+      cpv_codes: notice.cpv_codes || [],
+      reference_number: notice.reference || notice.id?.toString(),
       sync_status: 'synced',
       last_sync_attempt: new Date().toISOString()
     }));
