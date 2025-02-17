@@ -1,8 +1,8 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-// Updated to v2.0.9 endpoint
-const API_ENDPOINT = 'https://ted.europa.eu/api/v2.0.9/notices'
+// Using correct base URL for TED API
+const API_ENDPOINT = 'https://ted-europa.eu/api/v2.0.9/notices'
 const BATCH_SIZE = 10
 
 const corsHeaders = {
