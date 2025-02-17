@@ -1,7 +1,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search'
+const API_ENDPOINT = 'https://ted.europa.eu/api/v3.0/notices/search-notices'  // Updated endpoint
 const BATCH_SIZE = 10
 
 const corsHeaders = {
@@ -28,14 +28,15 @@ Deno.serve(async (req) => {
     // Query parameters for the TED API
     const queryBody = {
       apiKey,
-      fields: ["all"],
+      fields: ["CONTENT"],  // Updated to match curl example
+      q: "PC=[320*]",
       pageSize: BATCH_SIZE,
-      q: "PC=[320*]", // Adding a basic query to filter IT-related tenders
       sortField: "publicationDate",
       sortOrder: "desc"
     };
 
     console.log('Making request to TED API endpoint:', API_ENDPOINT);
+    console.log('Query parameters:', { ...queryBody, apiKey: '[REDACTED]' });
     
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
